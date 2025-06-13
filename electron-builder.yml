@@ -1,0 +1,17 @@
+appId: com.grocerydelivery.management
+productName: Grocery Delivery Management
+directories:
+  output: dist-app
+  dist: dist-electron
+files:
+  - dist/**/*
+  - node_modules/**/*
+  - package.json
+mac:
+  category: public.app-category.business
+  target: dmg
+win:
+  target: nsis
+linux:
+  target: AppImage
+  category: Office
