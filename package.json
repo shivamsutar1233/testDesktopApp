@@ -9,6 +9,7 @@
     "dev:vite": "vite",
     "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
     "build": "vite build && electron-builder",
+    "build:vite": "vite build",
     "build:dir": "vite build && electron-builder --dir",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
