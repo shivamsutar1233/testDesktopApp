@@ -146,7 +146,7 @@ function OrdersPage() {
       headerName: "Customer",
       width: 180,
       renderCell: (params) => (
-        <Box>
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
           <Typography variant="body2">{params.value}</Typography>
           <Typography variant="caption" color="text.secondary">
             {params.row.customerEmail}

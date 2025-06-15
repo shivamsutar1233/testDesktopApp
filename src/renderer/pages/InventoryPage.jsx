@@ -159,7 +159,7 @@ function InventoryPage() {
       headerName: "Product Name",
       width: 200,
       renderCell: (params) => (
-        <Box>
+        <Box sx={{ display: "flex", flexDirection: "column" }}>
           <Typography variant="body2" fontWeight="bold">
             {params.value}
           </Typography>

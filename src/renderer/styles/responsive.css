@@ -219,6 +219,10 @@ body {
   width: 100%;
   overflow-x: auto;
 }
+.MuiDataGrid-cell {
+  display: flex;
+  align-items: center;
+}
 
 .responsive-table table {
   min-width: 600px;
