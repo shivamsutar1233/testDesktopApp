@@ -57,8 +57,7 @@ const ResponsiveTextField = ({
               ? "calc(85% - 32px)"
               : "calc(85% - 24px)",
           }),
-        },
-        "& .MuiInputLabel-shrink": {
+        },        "& .MuiInputLabel-shrink": {
           maxWidth: isLongLabel
             ? isSearchField
               ? isMobile
@@ -83,7 +82,8 @@ const ResponsiveTextField = ({
             : "12px",
           transform: `translate(14px, -9px) scale(0.85)`,
           padding: "0 4px",
-          backgroundColor: "background.paper",
+          backgroundColor: "var(--mui-palette-background-paper, #fff)",
+          zIndex: 1,
         },
         "& .MuiOutlinedInput-root": {
           minHeight: size === "small" ? "40px" : "56px",

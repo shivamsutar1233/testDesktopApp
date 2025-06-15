@@ -118,7 +118,6 @@ function SettingsPage() {
           {t("settings.savedSuccessfully", "Settings saved successfully!")}
         </Alert>
       )}
-
       <Grid container spacing={3}>
         {/* Theme & Appearance Settings */}
         <Grid item xs={12} md={getGridCols(12, 6, 6)}>
@@ -132,9 +131,9 @@ function SettingsPage() {
               )}
             />
             <CardContent>
-              <Grid container spacing={3}>
+              <Grid container spacing={3} alignItems={"center"}>
                 <Grid item xs={12}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth sx={{ my: 2 }}>
                     <InputLabel>{t("settings.theme")}</InputLabel>
                     <Select
                       value={userPreferences.theme}
@@ -153,7 +152,7 @@ function SettingsPage() {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth sx={{ my: 2 }}>
                     <InputLabel>
                       {t("settings.density", "Layout Density")}
                     </InputLabel>
@@ -209,7 +208,7 @@ function SettingsPage() {
             <CardContent>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth sx={{ my: 2 }}>
                     <InputLabel>{t("settings.language")}</InputLabel>
                     <Select
                       value={userPreferences.language}
@@ -230,6 +229,7 @@ function SettingsPage() {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    sx={{ my: 2 }}
                     label={t("settings.currency", "Currency")}
                     value={userPreferences.currency}
                     onChange={(e) =>
@@ -247,6 +247,7 @@ function SettingsPage() {
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    sx={{ my: 2 }}
                     label={t("settings.timezone", "Timezone")}
                     value={userPreferences.timezone}
                     onChange={(e) =>
@@ -281,9 +282,9 @@ function SettingsPage() {
               )}
             />
             <CardContent>
-              <Grid container spacing={3}>
+              <Grid container spacing={3} alignItems={"center"}>
                 <Grid item xs={12}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth sx={{ my: 2 }}>
                     <InputLabel>
                       {t("settings.fontSize", "Font Size")}
                     </InputLabel>
@@ -482,6 +483,7 @@ function SettingsPage() {
                 <Grid item xs={12} sm={6}>
                   <ResponsiveTextField
                     fullWidth
+                    sx={{ my: 2 }}
                     label={t("settings.companyName", "Company Name")}
                     value={localSettings.companyName}
                     onChange={(e) =>
@@ -492,6 +494,7 @@ function SettingsPage() {
                 <Grid item xs={12} sm={6}>
                   <ResponsiveTextField
                     fullWidth
+                    sx={{ my: 2 }}
                     label={t("settings.contactEmail", "Contact Email")}
                     type="email"
                     value={localSettings.contactEmail}
@@ -503,6 +506,7 @@ function SettingsPage() {
                 <Grid item xs={12} sm={6}>
                   <ResponsiveTextField
                     fullWidth
+                    sx={{ my: 2 }}
                     label={t("settings.contactPhone", "Contact Phone")}
                     value={localSettings.contactPhone}
                     onChange={(e) =>
@@ -513,6 +517,7 @@ function SettingsPage() {
                 <Grid item xs={12} sm={6}>
                   <ResponsiveTextField
                     fullWidth
+                    sx={{ my: 2 }}
                     label={t("settings.address", "Address")}
                     value={localSettings.address}
                     onChange={(e) =>
@@ -523,6 +528,7 @@ function SettingsPage() {
                 <Grid item xs={12} sm={4}>
                   <ResponsiveTextField
                     fullWidth
+                    sx={{ my: 2 }}
                     label={t("settings.city", "City")}
                     value={localSettings.city}
                     onChange={(e) =>
@@ -533,6 +539,7 @@ function SettingsPage() {
                 <Grid item xs={12} sm={4}>
                   <ResponsiveTextField
                     fullWidth
+                    sx={{ my: 2 }}
                     label={t("settings.state", "State")}
                     value={localSettings.state}
                     onChange={(e) =>
@@ -543,6 +550,7 @@ function SettingsPage() {
                 <Grid item xs={12} sm={4}>
                   <ResponsiveTextField
                     fullWidth
+                    sx={{ my: 2 }}
                     label={t("settings.zipCode", "ZIP Code")}
                     value={localSettings.zipCode}
                     onChange={(e) =>
