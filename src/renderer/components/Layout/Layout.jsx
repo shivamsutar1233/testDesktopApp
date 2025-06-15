@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from "react";
 import {
   Box,
   Drawer,
@@ -13,7 +13,7 @@ import {
   Menu,
   MenuItem,
   Tooltip,
-} from '@mui/material'
+} from "@mui/material";
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
@@ -25,86 +25,141 @@ import {
   Settings as SettingsIcon,
   Logout as LogoutIcon,
   AccountCircle as AccountIcon,
-} from '@mui/icons-material'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { logoutUser } from '../../store/slices/authSlice'
-import NavigationItem from './NavigationItem'
-import NotificationsPanel from '../Notifications/NotificationsPanel'
-
-const drawerWidth = 280
-
-const navigationItems = [
-  {
-    text: 'Dashboard',
-    icon: <DashboardIcon />,
-    path: '/dashboard',
-  },
-  {
-    text: 'Orders',
-    icon: <OrdersIcon />,
-    path: '/orders',
-  },
-  {
-    text: 'Inventory',
-    icon: <InventoryIcon />,
-    path: '/inventory',
-  },
-  {
-    text: 'Deliveries',
-    icon: <DeliveryIcon />,
-    path: '/deliveries',
-  },
-  {
-    text: 'Customers',
-    icon: <CustomersIcon />,
-    path: '/customers',
-  },
-]
+  LightMode as LightModeIcon,
+  DarkMode as DarkModeIcon,
+  Language as LanguageIcon,
+} from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
+import { logoutUser } from "../../store/slices/authSlice";
+import {
+  toggleTheme,
+  toggleSidebar,
+  updatePreference,
+} from "../../store/slices/userPreferencesSlice";
+import NavigationItem from "./NavigationItem";
+import NotificationsPanel from "../Notifications/NotificationsPanel";
+import useResponsive from "../../hooks/useResponsive";
+import useTranslation from "../../hooks/useTranslation";
 
 function Layout({ children }) {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { user } = useSelector((state) => state.auth)
-  const { unreadCount } = useSelector((state) => state.notifications)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useSelector((state) => state.auth);
+  const { unreadCount } = useSelector((state) => state.notifications);
+  const userPreferences = useSelector((state) => state.userPreferences);
 
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [notificationsOpen, setNotificationsOpen] = useState(false)
-  const [anchorEl, setAnchorEl] = useState(null)
+  // Responsive hooks
+  const { isMobile, isTablet, shouldCollapseSidebar, getDrawerWidth } =
+    useResponsive();
+  const { t, getAvailableLanguages } = useTranslation();
 
+  const drawerWidth = getDrawerWidth();
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [languageMenuAnchor, setLanguageMenuAnchor] = useState(null);
+
+  // Auto-collapse sidebar on mobile/tablet
+  useEffect(() => {
+    if (shouldCollapseSidebar && !userPreferences.layout.sidebarCollapsed) {
+      dispatch(toggleSidebar());
+    }
+  }, [
+    shouldCollapseSidebar,
+    dispatch,
+    userPreferences.layout.sidebarCollapsed,
+  ]);
+
+  const navigationItems = [
+    {
+      text: t("navigation.dashboard"),
+      icon: <DashboardIcon />,
+      path: "/dashboard",
+    },
+    {
+      text: t("navigation.orders"),
+      icon: <OrdersIcon />,
+      path: "/orders",
+    },
+    {
+      text: t("navigation.inventory"),
+      icon: <InventoryIcon />,
+      path: "/inventory",
+    },
+    {
+      text: t("navigation.deliveries"),
+      icon: <DeliveryIcon />,
+      path: "/deliveries",
+    },
+    {
+      text: t("navigation.customers"),
+      icon: <CustomersIcon />,
+      path: "/customers",
+    },
+  ];
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
+    if (isMobile || isTablet) {
+      setMobileOpen(!mobileOpen);
+    } else {
+      dispatch(toggleSidebar());
+    }
+  };
 
   const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget)
-  }
+    setAnchorEl(event.currentTarget);
+  };
 
   const handleProfileMenuClose = () => {
-    setAnchorEl(null)
-  }
+    setAnchorEl(null);
+  };
+
+  const handleLanguageMenuOpen = (event) => {
+    setLanguageMenuAnchor(event.currentTarget);
+  };
+
+  const handleLanguageMenuClose = () => {
+    setLanguageMenuAnchor(null);
+  };
+
+  const handleLanguageChange = (language) => {
+    dispatch(updatePreference({ key: "language", value: language }));
+    handleLanguageMenuClose();
+  };
+
+  const handleThemeToggle = () => {
+    dispatch(toggleTheme());
+  };
 
   const handleLogout = async () => {
-    handleProfileMenuClose()
-    await dispatch(logoutUser())
-    navigate('/login')
-  }
+    handleProfileMenuClose();
+    await dispatch(logoutUser());
+    navigate("/login");
+  };
 
   const handleSettingsClick = () => {
-    handleProfileMenuClose()
-    navigate('/settings')
-  }
-
+    handleProfileMenuClose();
+    navigate("/settings");
+  };
   const drawer = (
     <div>
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'bold' }}>
-          Grocery Manager
+      <Toolbar sx={{ px: { xs: 2, sm: 3 } }}>
+        <Typography
+          variant={isMobile ? "h6" : "h5"}
+          noWrap
+          component="div"
+          sx={{
+            fontWeight: "bold",
+            fontSize: { xs: "1.1rem", sm: "1.25rem", md: "1.5rem" },
+          }}
+        >
+          {t("common.appName", "Grocery Manager")}
         </Typography>
       </Toolbar>
       <Divider />
-      <List>
+      <List sx={{ px: 1 }}>
         {navigationItems.map((item) => (
           <NavigationItem
             key={item.path}
@@ -113,159 +168,279 @@ function Layout({ children }) {
             path={item.path}
             active={location.pathname.startsWith(item.path)}
             onClick={() => {
-              navigate(item.path)
+              navigate(item.path);
               if (mobileOpen) {
-                setMobileOpen(false)
+                setMobileOpen(false);
               }
             }}
           />
         ))}
       </List>
       <Divider />
-      <List>
+      <List sx={{ px: 1 }}>
         <NavigationItem
-          text="Settings"
+          text={t("navigation.settings")}
           icon={<SettingsIcon />}
           path="/settings"
-          active={location.pathname === '/settings'}
+          active={location.pathname === "/settings"}
           onClick={() => {
-            navigate('/settings')
+            navigate("/settings");
             if (mobileOpen) {
-              setMobileOpen(false)
+              setMobileOpen(false);
             }
           }}
-        />
+        />{" "}
       </List>
+
+      {/* Quick Actions in Sidebar */}
+      <Box sx={{ mt: "auto", p: 2, borderTop: 1, borderColor: "divider" }}>
+        {/* Theme toggle moved to top bar */}
+      </Box>
     </div>
-  )
+  );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <AppBar
         position="fixed"
         sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          backgroundColor: 'white',
-          color: 'text.primary',
-          boxShadow: 1,
+          width: {
+            xs: "100%",
+            sm:
+              userPreferences.layout.sidebarCollapsed || shouldCollapseSidebar
+                ? "100%"
+                : `calc(100% - ${drawerWidth}px)`,
+          },
+          ml: {
+            xs: 0,
+            sm:
+              userPreferences.layout.sidebarCollapsed || shouldCollapseSidebar
+                ? 0
+                : `${drawerWidth}px`,
+          },
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          transition: "all 0.3s ease-in-out",
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ px: { xs: 2, sm: 3 } }}>
           <IconButton
             color="inherit"
-            aria-label="open drawer"
+            aria-label="toggle drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{
+              mr: 2,
+              display: {
+                xs: "block",
+                sm: userPreferences.layout.sidebarCollapsed ? "block" : "none",
+              },
+            }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {navigationItems.find(item => location.pathname.startsWith(item.path))?.text || 'Dashboard'}
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, display: { xs: "block", sm: "none" } }}
+          >
+            {t("common.appName", "Grocery Manager")}
           </Typography>
-          
-          <Tooltip title="Notifications">
+          <Box sx={{ flexGrow: 1 }} /> {/* Language Selector */}
+          <Tooltip title={t("settings.language")}>
             <IconButton
               color="inherit"
-              onClick={() => setNotificationsOpen(true)}
+              onClick={handleLanguageMenuOpen}
+              sx={{ mr: 1 }}
+            >
+              <LanguageIcon />
+            </IconButton>
+          </Tooltip>
+          {/* Theme Toggle */}
+          <Tooltip
+            title={
+              userPreferences.theme === "dark"
+                ? t("settings.light")
+                : t("settings.dark")
+            }
+          >
+            <IconButton
+              color="inherit"
+              onClick={handleThemeToggle}
+              sx={{ mr: 1 }}
+            >
+              {userPreferences.theme === "dark" ? (
+                <LightModeIcon />
+              ) : (
+                <DarkModeIcon />
+              )}
+            </IconButton>
+          </Tooltip>
+          {/* Notifications */}
+          <Tooltip title={t("common.notifications", "Notifications")}>
+            <IconButton
+              color="inherit"
+              onClick={() => setNotificationsOpen(!notificationsOpen)}
+              sx={{ mr: 1 }}
             >
               <Badge badgeContent={unreadCount} color="error">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
           </Tooltip>
-
-          <Tooltip title="Profile">
+          {/* Profile Menu */}
+          <Tooltip title={t("common.profile", "Profile")}>
             <IconButton
-              color="inherit"
+              size="large"
+              edge="end"
+              aria-label="account menu"
               onClick={handleProfileMenuOpen}
+              color="inherit"
             >
-              <Avatar 
-                sx={{ width: 32, height: 32 }}
-                alt={user?.name || 'User'}
-                src={user?.avatar}
-              >
+              <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.main" }}>
                 {user?.name?.charAt(0) || <AccountIcon />}
               </Avatar>
             </IconButton>
           </Tooltip>
-
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleProfileMenuClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-          >
-            <MenuItem onClick={handleSettingsClick}>
-              <SettingsIcon sx={{ mr: 1 }} />
-              Settings
-            </MenuItem>
-            <MenuItem onClick={handleLogout}>
-              <LogoutIcon sx={{ mr: 1 }} />
-              Logout
-            </MenuItem>
-          </Menu>
         </Toolbar>
       </AppBar>
-
+      {/* Language Menu */}
+      <Menu
+        anchorEl={languageMenuAnchor}
+        open={Boolean(languageMenuAnchor)}
+        onClose={handleLanguageMenuClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        {getAvailableLanguages().map((lang) => (
+          <MenuItem
+            key={lang.code}
+            onClick={() => handleLanguageChange(lang.code)}
+            selected={userPreferences.language === lang.code}
+          >
+            {lang.name}
+          </MenuItem>
+        ))}
+      </Menu>
+      {/* Profile Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleProfileMenuClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <MenuItem onClick={handleSettingsClick}>
+          <SettingsIcon sx={{ mr: 1 }} />
+          {t("navigation.settings")}
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          <LogoutIcon sx={{ mr: 1 }} />
+          {t("navigation.logout")}
+        </MenuItem>
+      </Menu>
+      {/* Sidebar */}
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: {
+            xs: 0,
+            sm:
+              userPreferences.layout.sidebarCollapsed || shouldCollapseSidebar
+                ? 0
+                : drawerWidth,
+          },
+          flexShrink: { sm: 0 },
+          transition: "width 0.3s ease-in-out",
+        }}
       >
+        {/* Mobile Drawer */}
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true, // Better open performance on mobile
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              height: "100vh",
+              display: "flex",
+              flexDirection: "column",
+            },
           }}
         >
           {drawer}
         </Drawer>
+
+        {/* Desktop Drawer */}
         <Drawer
-          variant="permanent"
+          variant="persistent"
+          open={
+            !userPreferences.layout.sidebarCollapsed && !shouldCollapseSidebar
+          }
           sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              height: "100vh",
+              display: "flex",
+              flexDirection: "column",
+              position: "relative",
+              transition: "transform 0.3s ease-in-out",
+            },
           }}
-          open
         >
           {drawer}
         </Drawer>
       </Box>
-
+      {/* Main Content */}{" "}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          mt: 8,
-          backgroundColor: 'background.default',
-          minHeight: 'calc(100vh - 64px)',
+          p: { xs: 2, sm: 3 },
+          width: {
+            xs: "100%",
+            sm:
+              userPreferences.layout.sidebarCollapsed || shouldCollapseSidebar
+                ? "100%"
+                : `calc(100% - ${drawerWidth}px)`,
+          },
+          maxWidth: "100%",
+          mt: { xs: 7, sm: 8 },
+          backgroundColor: "background.default",
+          minHeight: "calc(100vh - 64px)",
+          transition: "all 0.3s ease-in-out",
+          overflow: "auto",
+          overflowX: "hidden",
         }}
       >
         {children}
       </Box>
-
-      <NotificationsPanel 
-        open={notificationsOpen} 
-        onClose={() => setNotificationsOpen(false)} 
+      {/* Notifications Panel */}
+      <NotificationsPanel
+        open={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
       />
     </Box>
-  )
+  );
 }
 
-export default Layout
+export default Layout;

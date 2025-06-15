@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 import {
   Container,
   Paper,
-  TextField,
   Button,
   Typography,
   Box,
@@ -10,117 +9,123 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
-} from '@mui/material'
+} from "@mui/material";
 import {
   Visibility,
   VisibilityOff,
   Store as StoreIcon,
-} from '@mui/icons-material'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { loginUser, clearError } from '../store/slices/authSlice'
+} from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { loginUser, clearError } from "../store/slices/authSlice";
+import { ResponsiveTextField } from "../components/Responsive/ResponsiveComponents";
 
 function LoginPage() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const { isLoading, error, isAuthenticated } = useSelector((state) => state.auth)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isLoading, error, isAuthenticated } = useSelector(
+    (state) => state.auth
+  );
 
   const [formData, setFormData] = useState({
-    email: 'admin@grocerymanager.com',
-    password: 'admin123',
-  })
-  const [showPassword, setShowPassword] = useState(false)
+    email: "admin@grocerymanager.com",
+    password: "admin123",
+  });
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard')
+      navigate("/dashboard");
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     // Clear any existing errors when component mounts
-    dispatch(clearError())
-  }, [dispatch])
+    dispatch(clearError());
+  }, [dispatch]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
+    const { name, value } = e.target;
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!formData.email || !formData.password) {
-      return
+      return;
     }
 
     try {
-      await dispatch(loginUser({
-        email: formData.email,
-        password: formData.password,
-      })).unwrap()
-      
-      navigate('/dashboard')
+      await dispatch(
+        loginUser({
+          email: formData.email,
+          password: formData.password,
+        })
+      ).unwrap();
+
+      navigate("/dashboard");
     } catch (error) {
       // Error is handled by the reducer
-      console.error('Login failed:', error)
+      console.error("Login failed:", error);
     }
-  }
+  };
 
   const handleTogglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword(!showPassword);
+  };
 
   return (
     <Container component="main" maxWidth="sm">
       <Box
         sx={{
           marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          minHeight: '80vh',
-          justifyContent: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          minHeight: "80vh",
+          justifyContent: "center",
         }}
       >
         <Paper
           elevation={3}
           sx={{
             padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
           }}
         >
           <Box
             sx={{
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
               mb: 3,
             }}
           >
-            <StoreIcon sx={{ fontSize: 40, color: 'primary.main', mr: 1 }} />
-            <Typography component="h1" variant="h4" sx={{ fontWeight: 'bold' }}>
+            <StoreIcon sx={{ fontSize: 40, color: "primary.main", mr: 1 }} />
+            <Typography component="h1" variant="h4" sx={{ fontWeight: "bold" }}>
               Grocery Manager
             </Typography>
           </Box>
-
-          <Typography component="h2" variant="h6" sx={{ mb: 3, color: 'text.secondary' }}>
+          <Typography
+            component="h2"
+            variant="h6"
+            sx={{ mb: 3, color: "text.secondary" }}
+          >
             Sign in to your account
           </Typography>
-
           {error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
               {error}
             </Alert>
-          )}
-
-          <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
-            <TextField
+          )}{" "}
+          <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+            <ResponsiveTextField
               margin="normal"
               required
               fullWidth
@@ -133,13 +138,13 @@ function LoginPage() {
               onChange={handleChange}
               disabled={isLoading}
             />
-            <TextField
+            <ResponsiveTextField
               margin="normal"
               required
               fullWidth
               name="password"
               label="Password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
               value={formData.password}
@@ -169,13 +174,25 @@ function LoginPage() {
               {isLoading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                'Sign In'
+                "Sign In"
               )}
             </Button>
           </Box>
-
-          <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1, width: '100%' }}>
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 1 }}>
+          <Box
+            sx={{
+              mt: 2,
+              p: 2,
+              bgcolor: "grey.50",
+              borderRadius: 1,
+              width: "100%",
+            }}
+          >
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ mb: 1 }}
+            >
               <strong>Default Login Credentials:</strong>
             </Typography>
             <Typography variant="body2" color="text.secondary" align="center">
@@ -185,14 +202,18 @@ function LoginPage() {
               Password: admin123
             </Typography>
           </Box>
-
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 2 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            align="center"
+            sx={{ mt: 2 }}
+          >
             Welcome to the Grocery Delivery Management System
           </Typography>
         </Paper>
       </Box>
     </Container>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;

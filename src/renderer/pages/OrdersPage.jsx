@@ -1,127 +1,139 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 import {
   Box,
   Paper,
   Typography,
-  TextField,
   Button,
-  MenuItem,
   Grid,
   Chip,
   IconButton,
   Tooltip,
-} from '@mui/material'
+} from "@mui/material";
 import {
   Search as SearchIcon,
-  FilterList as FilterIcon,
   Refresh as RefreshIcon,
   Add as AddIcon,
-} from '@mui/icons-material'
-import { DataGrid } from '@mui/x-data-grid'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { fetchOrders, setFilters, createOrder } from '../store/slices/ordersSlice'
-import CreateOrderDialog from '../components/Orders/CreateOrderDialog'
+} from "@mui/icons-material";
+import { DataGrid } from "@mui/x-data-grid";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  fetchOrders,
+  setFilters,
+  createOrder,
+} from "../store/slices/ordersSlice";
+import CreateOrderDialog from "../components/Orders/CreateOrderDialog";
+import ResponsiveSelect from "../components/Responsive/ResponsiveSelect";
+import { ResponsiveTextField } from "../components/Responsive/ResponsiveComponents";
 
 const orderStatuses = [
-  { value: '', label: 'All Statuses' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'confirmed', label: 'Confirmed' },
-  { value: 'preparing', label: 'Preparing' },
-  { value: 'ready', label: 'Ready for Delivery' },
-  { value: 'out_for_delivery', label: 'Out for Delivery' },
-  { value: 'delivered', label: 'Delivered' },
-  { value: 'cancelled', label: 'Cancelled' },
-]
+  { value: "", label: "All Statuses" },
+  { value: "pending", label: "Pending" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "preparing", label: "Preparing" },
+  { value: "ready", label: "Ready for Delivery" },
+  { value: "out_for_delivery", label: "Out for Delivery" },
+  { value: "delivered", label: "Delivered" },
+  { value: "cancelled", label: "Cancelled" },
+];
 
 function OrdersPage() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const { orders, isLoading, totalOrders, currentPage, totalPages, filters } = useSelector(
-    (state) => state.orders
-  )
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { orders, isLoading, totalOrders, currentPage, totalPages, filters } =
+    useSelector((state) => state.orders);
 
-  const [searchText, setSearchText] = useState(filters.search || '')
+  const [searchText, setSearchText] = useState(filters.search || "");
   const [paginationModel, setPaginationModel] = useState({
     page: currentPage - 1,
     pageSize: 20,
-  })
-  const [createOrderOpen, setCreateOrderOpen] = useState(false)
+  });
+  const [createOrderOpen, setCreateOrderOpen] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchOrders({
-      page: currentPage,
-      limit: 20,
-      status: filters.status,
-      search: filters.search,
-    }))
-  }, [dispatch, currentPage, filters])
-
-  const handleSearch = () => {
-    dispatch(setFilters({ search: searchText }))
-    dispatch(fetchOrders({
-      page: 1,
-      limit: 20,
-      status: filters.status,
-      search: searchText,
-    }))
-  }
-
-  const handleStatusChange = (status) => {
-    dispatch(setFilters({ status }))
-    dispatch(fetchOrders({
-      page: 1,
-      limit: 20,
-      status,
-      search: filters.search,
-    }))
-  }
-
-  const handleRefresh = () => {
-    dispatch(fetchOrders({
-      page: currentPage,
-      limit: 20,
-      status: filters.status,
-      search: filters.search,
-    }))
-  }
-
-  const handleRowClick = (params) => {
-    navigate(`/orders/${params.id}`)
-  }
-
-  const handleCreateOrder = async (orderData) => {
-    try {
-      await dispatch(createOrder(orderData)).unwrap()
-      // Refresh the orders list
-      dispatch(fetchOrders({
+    dispatch(
+      fetchOrders({
         page: currentPage,
         limit: 20,
         status: filters.status,
         search: filters.search,
-      }))
+      })
+    );
+  }, [dispatch, currentPage, filters]);
+
+  const handleSearch = () => {
+    dispatch(setFilters({ search: searchText }));
+    dispatch(
+      fetchOrders({
+        page: 1,
+        limit: 20,
+        status: filters.status,
+        search: searchText,
+      })
+    );
+  };
+
+  const handleStatusChange = (status) => {
+    dispatch(setFilters({ status }));
+    dispatch(
+      fetchOrders({
+        page: 1,
+        limit: 20,
+        status,
+        search: filters.search,
+      })
+    );
+  };
+
+  const handleRefresh = () => {
+    dispatch(
+      fetchOrders({
+        page: currentPage,
+        limit: 20,
+        status: filters.status,
+        search: filters.search,
+      })
+    );
+  };
+
+  const handleRowClick = (params) => {
+    navigate(`/orders/${params.id}`);
+  };
+
+  const handleCreateOrder = async (orderData) => {
+    try {
+      await dispatch(createOrder(orderData)).unwrap();
+      // Refresh the orders list
+      dispatch(
+        fetchOrders({
+          page: currentPage,
+          limit: 20,
+          status: filters.status,
+          search: filters.search,
+        })
+      );
     } catch (error) {
-      console.error('Failed to create order:', error)
+      console.error("Failed to create order:", error);
     }
-  }
+  };
 
   const getStatusColor = (status) => {
     const statusColors = {
-      pending: 'warning',
-      confirmed: 'info',
-      preparing: 'info',
-      ready: 'primary',
-      out_for_delivery: 'secondary',
-      delivered: 'success',
-      cancelled: 'error',
-    }
-    return statusColors[status?.toLowerCase()] || 'default'
-  }
+      pending: "warning",
+      confirmed: "info",
+      preparing: "info",
+      ready: "primary",
+      out_for_delivery: "secondary",
+      delivered: "success",
+      cancelled: "error",
+    };
+    return statusColors[status?.toLowerCase()] || "default";
+  };
 
   const columns = [
     {
-      field: 'id',
-      headerName: 'Order #',
+      field: "id",
+      headerName: "Order #",
       width: 130,
       renderCell: (params) => (
         <Typography variant="body2" fontWeight="bold">
@@ -130,8 +142,8 @@ function OrdersPage() {
       ),
     },
     {
-      field: 'customerName',
-      headerName: 'Customer',
+      field: "customerName",
+      headerName: "Customer",
       width: 180,
       renderCell: (params) => (
         <Box>
@@ -143,8 +155,8 @@ function OrdersPage() {
       ),
     },
     {
-      field: 'total',
-      headerName: 'Total',
+      field: "total",
+      headerName: "Total",
       width: 120,
       renderCell: (params) => (
         <Typography variant="body2" fontWeight="bold">
@@ -153,33 +165,35 @@ function OrdersPage() {
       ),
     },
     {
-      field: 'status',
-      headerName: 'Status',
+      field: "status",
+      headerName: "Status",
       width: 140,
       renderCell: (params) => (
         <Chip
-          label={params.value?.replace('_', ' ').toUpperCase()}
+          label={params.value?.replace("_", " ").toUpperCase()}
           color={getStatusColor(params.value)}
           size="small"
         />
       ),
     },
     {
-      field: 'deliveryAddress',
-      headerName: 'Delivery Address',
+      field: "deliveryAddress",
+      headerName: "Delivery Address",
       width: 200,
       renderCell: (params) => {
-        const address = params.value
+        const address = params.value;
         return (
           <Typography variant="body2" noWrap>
-            {address ? `${address.street}, ${address.city}, ${address.state}` : 'No address'}
+            {address
+              ? `${address.street}, ${address.city}, ${address.state}`
+              : "No address"}
           </Typography>
-        )
+        );
       },
     },
     {
-      field: 'orderDate',
-      headerName: 'Order Date',
+      field: "orderDate",
+      headerName: "Order Date",
       width: 160,
       renderCell: (params) => (
         <Typography variant="body2">
@@ -187,12 +201,17 @@ function OrdersPage() {
         </Typography>
       ),
     },
-  ]
+  ];
 
   return (
     <Box>
       {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h4" fontWeight="bold">
           Orders Management
         </Typography>
@@ -208,14 +227,15 @@ function OrdersPage() {
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
+          {" "}
           <Grid item xs={12} md={4}>
-            <TextField
+            <ResponsiveTextField
               fullWidth
               size="small"
               placeholder="Search orders..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
               InputProps={{
                 endAdornment: (
                   <IconButton size="small" onClick={handleSearch}>
@@ -226,20 +246,13 @@ function OrdersPage() {
             />
           </Grid>
           <Grid item xs={12} md={3}>
-            <TextField
-              fullWidth
-              select
-              size="small"
+            <ResponsiveSelect
               label="Status"
               value={filters.status}
               onChange={(e) => handleStatusChange(e.target.value)}
-            >
-              {orderStatuses.map((status) => (
-                <MenuItem key={status.value} value={status.value}>
-                  {status.label}
-                </MenuItem>
-              ))}
-            </TextField>
+              options={orderStatuses}
+              minWidth={150}
+            />
           </Grid>
           <Grid item xs={12} md={5}>
             <Box display="flex" gap={1} justifyContent="flex-end">
@@ -254,7 +267,7 @@ function OrdersPage() {
       </Paper>
 
       {/* Orders Table */}
-      <Paper sx={{ height: 600, width: '100%' }}>
+      <Paper sx={{ height: 600, width: "100%" }}>
         <DataGrid
           rows={orders}
           columns={columns}
@@ -266,8 +279,8 @@ function OrdersPage() {
           paginationMode="server"
           onRowClick={handleRowClick}
           sx={{
-            '& .MuiDataGrid-row:hover': {
-              cursor: 'pointer',
+            "& .MuiDataGrid-row:hover": {
+              cursor: "pointer",
             },
           }}
           disableRowSelectionOnClick
@@ -281,7 +294,7 @@ function OrdersPage() {
         onSubmit={handleCreateOrder}
       />
     </Box>
-  )
+  );
 }
 
-export default OrdersPage
+export default OrdersPage;

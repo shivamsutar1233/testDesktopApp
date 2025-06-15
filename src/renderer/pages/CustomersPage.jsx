@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
   Paper,
-  TextField,
   Button,
-  MenuItem,
   Grid,
   Chip,
   IconButton,
   Tooltip,
   Avatar,
-} from '@mui/material'
+} from "@mui/material";
 import {
   Search as SearchIcon,
   Refresh as RefreshIcon,
@@ -20,98 +18,113 @@ import {
   Email as EmailIcon,
   Phone as PhoneIcon,
   LocationOn as LocationIcon,
-} from '@mui/icons-material'
-import { DataGrid } from '@mui/x-data-grid'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { fetchCustomers, setFilters } from '../store/slices/customersSlice'
+} from "@mui/icons-material";
+import { DataGrid } from "@mui/x-data-grid";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchCustomers, setFilters } from "../store/slices/customersSlice";
+import ResponsiveSelect from "../components/Responsive/ResponsiveSelect";
+import { ResponsiveTextField } from "../components/Responsive/ResponsiveComponents";
 
 const customerStatuses = [
-  { value: '', label: 'All Statuses' },
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'blocked', label: 'Blocked' },
-]
+  { value: "", label: "All Statuses" },
+  { value: "active", label: "Active" },
+  { value: "inactive", label: "Inactive" },
+  { value: "pending", label: "Pending" },
+  { value: "blocked", label: "Blocked" },
+];
 
 function CustomersPage() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const { customers, isLoading, totalCustomers, currentPage, totalPages, filters } = useSelector(
-    (state) => state.customers
-  )
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const {
+    customers,
+    isLoading,
+    totalCustomers,
+    currentPage,
+    totalPages,
+    filters,
+  } = useSelector((state) => state.customers);
 
-  const [searchText, setSearchText] = useState(filters.search || '')
-  const [selectedStatus, setSelectedStatus] = useState(filters.status || '')
+  const [searchText, setSearchText] = useState(filters.search || "");
+  const [selectedStatus, setSelectedStatus] = useState(filters.status || "");
   const [paginationModel, setPaginationModel] = useState({
     page: currentPage - 1,
     pageSize: 20,
-  })
+  });
 
   useEffect(() => {
-    dispatch(fetchCustomers({
-      page: currentPage,
-      limit: 20,
-      status: filters.status,
-      search: filters.search,
-    }))
-  }, [dispatch, currentPage, filters])
+    dispatch(
+      fetchCustomers({
+        page: currentPage,
+        limit: 20,
+        status: filters.status,
+        search: filters.search,
+      })
+    );
+  }, [dispatch, currentPage, filters]);
 
   const handleSearch = () => {
-    dispatch(setFilters({ search: searchText }))
-    dispatch(fetchCustomers({
-      page: 1,
-      limit: 20,
-      status: selectedStatus,
-      search: searchText,
-    }))
-  }
+    dispatch(setFilters({ search: searchText }));
+    dispatch(
+      fetchCustomers({
+        page: 1,
+        limit: 20,
+        status: selectedStatus,
+        search: searchText,
+      })
+    );
+  };
 
   const handleStatusChange = (status) => {
-    setSelectedStatus(status)
-    dispatch(setFilters({ status }))
-    dispatch(fetchCustomers({
-      page: 1,
-      limit: 20,
-      status,
-      search: filters.search,
-    }))
-  }
+    setSelectedStatus(status);
+    dispatch(setFilters({ status }));
+    dispatch(
+      fetchCustomers({
+        page: 1,
+        limit: 20,
+        status,
+        search: filters.search,
+      })
+    );
+  };
 
   const handleRefresh = () => {
-    dispatch(fetchCustomers({
-      page: currentPage,
-      limit: 20,
-      status: filters.status,
-      search: filters.search,
-    }))
-  }
+    dispatch(
+      fetchCustomers({
+        page: currentPage,
+        limit: 20,
+        status: filters.status,
+        search: filters.search,
+      })
+    );
+  };
 
   const handleRowClick = (params) => {
-    navigate(`/customers/${params.id}`)
-  }
+    navigate(`/customers/${params.id}`);
+  };
 
   const getStatusColor = (status) => {
     const statusColors = {
-      active: 'success',
-      inactive: 'default',
-      pending: 'warning',
-      blocked: 'error',
-    }
-    return statusColors[status?.toLowerCase()] || 'default'
-  }
+      active: "success",
+      inactive: "default",
+      pending: "warning",
+      blocked: "error",
+    };
+    return statusColors[status?.toLowerCase()] || "default";
+  };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount)
-  }
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
 
   const columns = [
     {
-      field: 'avatar',
-      headerName: '',
+      field: "avatar",
+      headerName: "",
       width: 60,
       sortable: false,
       renderCell: (params) => (
@@ -121,15 +134,17 @@ function CustomersPage() {
       ),
     },
     {
-      field: 'name',
-      headerName: 'Customer Name',
+      field: "name",
+      headerName: "Customer Name",
       width: 200,
       renderCell: (params) => (
         <Box>
           <Typography variant="body2" fontWeight="bold">
             {params.row.firstName} {params.row.lastName}
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+          <Box
+            sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}
+          >
             <EmailIcon fontSize="small" color="action" />
             <Typography variant="caption" color="text.secondary">
               {params.row.email}
@@ -139,26 +154,24 @@ function CustomersPage() {
       ),
     },
     {
-      field: 'phone',
-      headerName: 'Phone',
+      field: "phone",
+      headerName: "Phone",
       width: 140,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
           <PhoneIcon fontSize="small" color="action" />
-          <Typography variant="body2">
-            {params.value}
-          </Typography>
+          <Typography variant="body2">{params.value}</Typography>
         </Box>
       ),
     },
     {
-      field: 'location',
-      headerName: 'Location',
+      field: "location",
+      headerName: "Location",
       width: 180,
       renderCell: (params) => {
-        const address = params.row.addresses?.[0]
+        const address = params.row.addresses?.[0];
         return address ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <LocationIcon fontSize="small" color="action" />
             <Typography variant="body2">
               {address.city}, {address.state}
@@ -168,12 +181,12 @@ function CustomersPage() {
           <Typography variant="body2" color="text.secondary">
             No address
           </Typography>
-        )
+        );
       },
     },
     {
-      field: 'totalOrders',
-      headerName: 'Orders',
+      field: "totalOrders",
+      headerName: "Orders",
       width: 100,
       renderCell: (params) => (
         <Typography variant="body2" fontWeight="bold">
@@ -182,8 +195,8 @@ function CustomersPage() {
       ),
     },
     {
-      field: 'totalSpent',
-      headerName: 'Total Spent',
+      field: "totalSpent",
+      headerName: "Total Spent",
       width: 120,
       renderCell: (params) => (
         <Typography variant="body2" fontWeight="bold" color="success.main">
@@ -192,8 +205,8 @@ function CustomersPage() {
       ),
     },
     {
-      field: 'loyaltyPoints',
-      headerName: 'Points',
+      field: "loyaltyPoints",
+      headerName: "Points",
       width: 100,
       renderCell: (params) => (
         <Chip
@@ -205,8 +218,8 @@ function CustomersPage() {
       ),
     },
     {
-      field: 'status',
-      headerName: 'Status',
+      field: "status",
+      headerName: "Status",
       width: 100,
       renderCell: (params) => (
         <Chip
@@ -218,21 +231,19 @@ function CustomersPage() {
       ),
     },
     {
-      field: 'registrationDate',
-      headerName: 'Joined',
+      field: "registrationDate",
+      headerName: "Joined",
       width: 120,
       renderCell: (params) => {
-        const date = new Date(params.value)
+        const date = new Date(params.value);
         return (
-          <Typography variant="body2">
-            {date.toLocaleDateString()}
-          </Typography>
-        )
+          <Typography variant="body2">{date.toLocaleDateString()}</Typography>
+        );
       },
     },
     {
-      field: 'actions',
-      headerName: 'Actions',
+      field: "actions",
+      headerName: "Actions",
       width: 100,
       sortable: false,
       renderCell: (params) => (
@@ -250,19 +261,23 @@ function CustomersPage() {
         </Box>
       ),
     },
-  ]
+  ];
 
   return (
     <Box>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
         <Typography variant="h4" fontWeight="bold">
           Customers Management
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-        >
+        <Button variant="contained" startIcon={<AddIcon />}>
           Add Customer
         </Button>
       </Box>
@@ -270,7 +285,7 @@ function CustomersPage() {
       {/* Summary Cards */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
+          <Paper sx={{ p: 2, textAlign: "center" }}>
             <Typography variant="h4" fontWeight="bold" color="primary.main">
               {totalCustomers}
             </Typography>
@@ -280,9 +295,9 @@ function CustomersPage() {
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
+          <Paper sx={{ p: 2, textAlign: "center" }}>
             <Typography variant="h4" fontWeight="bold" color="success.main">
-              {customers.filter(c => c.status === 'active').length}
+              {customers.filter((c) => c.status === "active").length}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Active Customers
@@ -290,7 +305,7 @@ function CustomersPage() {
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
+          <Paper sx={{ p: 2, textAlign: "center" }}>
             <Typography variant="h4" fontWeight="bold" color="info.main">
               2
             </Typography>
@@ -300,9 +315,11 @@ function CustomersPage() {
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Paper sx={{ p: 2, textAlign: 'center' }}>
+          <Paper sx={{ p: 2, textAlign: "center" }}>
             <Typography variant="h4" fontWeight="bold" color="warning.main">
-              {formatCurrency(customers.reduce((sum, c) => sum + (c.totalSpent || 0), 0))}
+              {formatCurrency(
+                customers.reduce((sum, c) => sum + (c.totalSpent || 0), 0)
+              )}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Total Revenue
@@ -314,14 +331,15 @@ function CustomersPage() {
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
+          {" "}
           <Grid item xs={12} md={4}>
-            <TextField
+            <ResponsiveTextField
               fullWidth
               size="small"
               placeholder="Search customers..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
               InputProps={{
                 endAdornment: (
                   <IconButton onClick={handleSearch} size="small">
@@ -332,20 +350,13 @@ function CustomersPage() {
             />
           </Grid>
           <Grid item xs={12} md={3}>
-            <TextField 
-              fullWidth
-              size="small"
-              select
+            <ResponsiveSelect
               label="Status"
               value={selectedStatus}
               onChange={(e) => handleStatusChange(e.target.value)}
-            >
-              {customerStatuses.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
+              options={customerStatuses}
+              minWidth={140}
+            />
           </Grid>
           <Grid item xs={12} md={2}>
             <Button
@@ -365,7 +376,7 @@ function CustomersPage() {
       </Paper>
 
       {/* Customers Table */}
-      <Paper sx={{ height: 600, width: '100%' }}>
+      <Paper sx={{ height: 600, width: "100%" }}>
         <DataGrid
           rows={customers}
           columns={columns}
@@ -377,15 +388,15 @@ function CustomersPage() {
           paginationMode="server"
           onRowClick={handleRowClick}
           sx={{
-            '& .MuiDataGrid-row:hover': {
-              cursor: 'pointer',
+            "& .MuiDataGrid-row:hover": {
+              cursor: "pointer",
             },
           }}
           disableRowSelectionOnClick
         />
       </Paper>
     </Box>
-  )
+  );
 }
 
-export default CustomersPage
+export default CustomersPage;

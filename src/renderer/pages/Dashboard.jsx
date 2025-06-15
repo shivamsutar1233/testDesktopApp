@@ -1,37 +1,38 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 import {
   Grid,
   Paper,
   Typography,
   Box,
-  Card,
-  CardContent,
   CircularProgress,
   Alert,
-} from '@mui/material'
+} from "@mui/material";
 import {
   ShoppingCart as OrdersIcon,
   Inventory as InventoryIcon,
   LocalShipping as DeliveryIcon,
-  TrendingUp as TrendingUpIcon,
-  People as CustomersIcon,
   AttachMoney as RevenueIcon,
-} from '@mui/icons-material'
-import { useDispatch, useSelector } from 'react-redux'
-import { ordersAPI } from '../services/ordersService'
-import { inventoryAPI } from '../services/inventoryService'
-import { deliveriesAPI } from '../services/deliveriesService'
-import StatsCard from '../components/Dashboard/StatsCard'
-import RecentOrders from '../components/Dashboard/RecentOrders'
-import LowStockAlert from '../components/Dashboard/LowStockAlert'
-import DeliveryStats from '../components/Dashboard/DeliveryStats'
-import OrdersChart from '../components/Dashboard/OrdersChart'
-import RevenueChart from '../components/Dashboard/RevenueChart'
+} from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { ordersAPI } from "../services/ordersService";
+import { inventoryAPI } from "../services/inventoryService";
+import { deliveriesAPI } from "../services/deliveriesService";
+import StatsCard from "../components/Dashboard/StatsCard";
+import RecentOrders from "../components/Dashboard/RecentOrders";
+import LowStockAlert from "../components/Dashboard/LowStockAlert";
+import DeliveryStats from "../components/Dashboard/DeliveryStats";
+import OrdersChart from "../components/Dashboard/OrdersChart";
+import RevenueChart from "../components/Dashboard/RevenueChart";
+import { ResponsiveContainer } from "../components/Responsive/ResponsiveComponents";
+import useResponsive from "../hooks/useResponsive";
+import useTranslation from "../hooks/useTranslation";
 
 function Dashboard() {
-  const dispatch = useDispatch()
-  const { user } = useSelector((state) => state.auth)
-  
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { t } = useTranslation();
+  const { isMobile, isTablet, getGridCols } = useResponsive();
+
   const [stats, setStats] = useState({
     orders: {
       total: 0,
@@ -53,28 +54,29 @@ function Dashboard() {
       total: 0,
       newToday: 0,
     },
-  })
-  
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadDashboardData()
-  }, [])
+    loadDashboardData();
+  }, []);
 
   const loadDashboardData = async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const today = new Date().toISOString().split('T')[0]
-      
+      const today = new Date().toISOString().split("T")[0];
+
       // Fetch all dashboard data concurrently
-      const [ordersResponse, inventoryResponse, deliveriesResponse] = await Promise.all([
-        ordersAPI.getOrderStatistics(today, today),
-        inventoryAPI.getLowStockItems(),
-        deliveriesAPI.getDeliveryStatistics(today, today),
-      ])
+      const [ordersResponse, inventoryResponse, deliveriesResponse] =
+        await Promise.all([
+          ordersAPI.getOrderStatistics(today, today),
+          inventoryAPI.getLowStockItems(),
+          deliveriesAPI.getDeliveryStatistics(today, today),
+        ]);
 
       setStats({
         orders: {
@@ -97,21 +99,26 @@ function Dashboard() {
           total: ordersResponse.totalCustomers || 0,
           newToday: ordersResponse.newCustomersToday || 0,
         },
-      })
+      });
     } catch (error) {
-      console.error('Error loading dashboard data:', error)
-      setError('Failed to load dashboard data')
+      console.error("Error loading dashboard data:", error);
+      setError("Failed to load dashboard data");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="400px"
+      >
         <CircularProgress />
       </Box>
-    )
+    );
   }
 
   if (error) {
@@ -119,104 +126,119 @@ function Dashboard() {
       <Alert severity="error" sx={{ mb: 2 }}>
         {error}
       </Alert>
-    )
+    );
   }
-
   return (
-    <Box>
+    <ResponsiveContainer>
       {/* Welcome Header */}
       <Box mb={3}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Welcome back, {user?.name || 'Manager'}!
+        <Typography
+          variant={isMobile ? "h5" : "h4"}
+          gutterBottom
+          sx={{ fontWeight: "bold" }}
+        >
+          {t("dashboard.welcome", "Welcome back")}, {user?.name || "Manager"}!
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Here's what's happening with your grocery delivery business today.
-        </Typography>
+          {t(
+            "dashboard.welcomeMessage",
+            "Here's what's happening with your grocery delivery business today."
+          )}
+        </Typography>{" "}
       </Box>
 
       {/* Stats Cards */}
-      <Grid container spacing={3} mb={3}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={getGridCols(12, 6, 3)}>
           <StatsCard
-            title="Today's Orders"
+            title={t("dashboard.todaysOrders", "Today's Orders")}
             value={stats.orders.total}
-            subtitle={`${stats.orders.pending} pending`}
+            subtitle={`${stats.orders.pending} ${t(
+              "orders.pending",
+              "pending"
+            )}`}
             icon={<OrdersIcon />}
             color="primary"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={getGridCols(12, 6, 3)}>
           <StatsCard
-            title="Revenue"
+            title={t("dashboard.revenue", "Revenue")}
             value={`$${stats.orders.todayRevenue.toLocaleString()}`}
-            subtitle="Today's earnings"
+            subtitle={t("dashboard.todaysEarnings", "Today's earnings")}
             icon={<RevenueIcon />}
             color="success"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={getGridCols(12, 6, 3)}>
           <StatsCard
-            title="Active Deliveries"
+            title={t("dashboard.activeDeliveries", "Active Deliveries")}
             value={stats.deliveries.inProgress}
-            subtitle={`${stats.deliveries.pending} pending`}
+            subtitle={`${stats.deliveries.pending} ${t(
+              "orders.pending",
+              "pending"
+            )}`}
             icon={<DeliveryIcon />}
             color="info"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={getGridCols(12, 6, 3)}>
           <StatsCard
-            title="Low Stock Items"
+            title={t("dashboard.lowStockItems", "Low Stock Items")}
             value={stats.inventory.lowStockItems}
-            subtitle="Need attention"
+            subtitle={t("dashboard.needAttention", "Need attention")}
             icon={<InventoryIcon />}
             color={stats.inventory.lowStockItems > 0 ? "warning" : "success"}
-          />
+          />{" "}
         </Grid>
       </Grid>
 
       {/* Charts Section */}
-      <Grid container spacing={3} sx={{ mt: 1 }}>
-        <Grid item xs={12} md={6}>
-          <OrdersChart 
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 3 }}>
+        <Grid item xs={12} lg={6}>
+          <OrdersChart
             data={{
               pending: stats.orders.pending,
               inProgress: stats.orders.inProgress || 0,
               delivered: stats.orders.completed,
-              total: stats.orders.total
+              total: stats.orders.total,
             }}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <RevenueChart 
+        <Grid item xs={12} lg={6}>
+          <RevenueChart
             data={{
               todayRevenue: stats.orders.todayRevenue,
               averageOrderValue: stats.orders.averageOrderValue || 0,
-              totalOrders: stats.orders.total
+              totalOrders: stats.orders.total,
             }}
           />
         </Grid>
       </Grid>
 
       {/* Main Content */}
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 2, sm: 3 }}>
         {/* Recent Orders */}
-        <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, height: '100%' }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-              Recent Orders
+        <Grid item xs={12} lg={8}>
+          <Paper sx={{ p: { xs: 2, sm: 3 }, height: "100%" }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
+              {t("dashboard.recentOrders", "Recent Orders")}
             </Typography>
-            <RecentOrders />
+            <RecentOrders limit={isMobile ? 5 : 10} />
           </Paper>
-        </Grid>
-
+        </Grid>{" "}
         {/* Right Sidebar */}
-        <Grid item xs={12} md={4}>
-          <Grid container spacing={3}>
+        <Grid item xs={12} lg={4}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             {/* Low Stock Alert */}
             <Grid item xs={12}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                  Stock Alerts
+              <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{ fontWeight: "bold" }}
+                >
+                  {t("dashboard.stockAlerts", "Stock Alerts")}
                 </Typography>
                 <LowStockAlert />
               </Paper>
@@ -224,9 +246,13 @@ function Dashboard() {
 
             {/* Delivery Stats */}
             <Grid item xs={12}>
-              <Paper sx={{ p: 3 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                  Delivery Performance
+              <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{ fontWeight: "bold" }}
+                >
+                  {t("dashboard.deliveryPerformance", "Delivery Performance")}
                 </Typography>
                 <DeliveryStats stats={stats.deliveries} />
               </Paper>
@@ -234,8 +260,8 @@ function Dashboard() {
           </Grid>
         </Grid>
       </Grid>
-    </Box>
-  )
+    </ResponsiveContainer>
+  );
 }
 
-export default Dashboard
+export default Dashboard;
