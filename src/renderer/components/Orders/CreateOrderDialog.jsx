@@ -150,181 +150,209 @@ function CreateOrderDialog({ open, onClose, onSubmit }) {
     setQuantity(1);
     onClose();
   };
-
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>Create New Order</DialogTitle>
-      <DialogContent>
-        <Grid container spacing={3} sx={{ mt: 1 }}>
+    <Dialog open={open} onClose={handleClose} maxWidth="lg">
+      <DialogTitle sx={{ pb: 1 }}>Create New Order</DialogTitle>
+      <DialogContent sx={{ px: 3, flex: 1 }}>
+        <Grid container spacing={2} flex={1}>
           {/* Customer Selection */}
-          <Grid item xs={12}>
-            <Autocomplete
-              options={MOCK_CUSTOMERS}
-              getOptionLabel={(option) => `${option.name} (${option.email})`}
-              onChange={handleCustomerChange}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select Customer"
-                  required
-                  fullWidth
-                />
-              )}
-            />
-          </Grid>
-          {/* Add Items Section */}
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Order Items
-            </Typography>
-            <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+          <Grid container spacing={3} size={6}>
+            <Grid item size={12}>
               <Autocomplete
-                options={MOCK_PRODUCTS}
-                getOptionLabel={(option) => `${option.name} - $${option.price}`}
-                value={selectedProduct}
-                onChange={(event, newValue) => setSelectedProduct(newValue)}
-                sx={{ flexGrow: 1 }}
+                options={MOCK_CUSTOMERS}
+                getOptionLabel={(option) => `${option.name} (${option.email})`}
+                onChange={handleCustomerChange}
                 renderInput={(params) => (
-                  <TextField {...params} label="Select Product" />
+                  <TextField {...params} label="Select Customer" required />
                 )}
-              />{" "}
-              <ResponsiveTextField
-                type="number"
-                label="Quantity"
-                value={quantity}
-                onChange={(e) =>
-                  setQuantity(Math.max(1, parseInt(e.target.value) || 1))
-                }
-                sx={{ width: 120 }}
-                inputProps={{ min: 1 }}
               />
-              <Button
-                variant="contained"
-                onClick={handleAddItem}
-                disabled={!selectedProduct}
-                startIcon={<AddIcon />}
-              >
-                Add
-              </Button>
-            </Box>
-
-            {/* Items Table */}
-            {orderData.items.length > 0 && (
-              <TableContainer component={Paper} variant="outlined">
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Product</TableCell>
-                      <TableCell align="center">Quantity</TableCell>
-                      <TableCell align="right">Price</TableCell>
-                      <TableCell align="right">Total</TableCell>
-                      <TableCell align="center">Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {orderData.items.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{item.productName}</TableCell>
-                        <TableCell align="center">{item.quantity}</TableCell>
-                        <TableCell align="right">
-                          ${item.price.toFixed(2)}
+            </Grid>
+            {/* Add Items Section */}
+            <Grid item xs={12} size={12}>
+              <Typography variant="h6" gutterBottom>
+                Order Items
+              </Typography>
+              <Box sx={{ display: "flex", gap: 2, mb: 2, flexWrap: "wrap" }}>
+                <Autocomplete
+                  options={MOCK_PRODUCTS}
+                  getOptionLabel={(option) =>
+                    `${option.name} - $${option.price}`
+                  }
+                  value={selectedProduct}
+                  onChange={(event, newValue) => setSelectedProduct(newValue)}
+                  sx={{ flexGrow: 1, minWidth: 200 }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Select Product" />
+                  )}
+                />
+                <ResponsiveTextField
+                  type="number"
+                  label="Quantity"
+                  value={quantity}
+                  onChange={(e) =>
+                    setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+                  }
+                  sx={{ width: 120 }}
+                  inputProps={{ min: 1 }}
+                  variant="outlined"
+                  size="large"
+                />
+                <Button
+                  variant="contained"
+                  onClick={handleAddItem}
+                  disabled={!selectedProduct}
+                  startIcon={<AddIcon />}
+                  sx={{ whiteSpace: "nowrap" }}
+                >
+                  Add Item{" "}
+                </Button>
+              </Box>{" "}
+              {/* Items Table */}
+              {orderData.items.length > 0 && (
+                <TableContainer
+                  component={Paper}
+                  variant="outlined"
+                  sx={{
+                    mt: 2,
+                    overflowX: "auto",
+                  }}
+                >
+                  <Table size="small" sx={{ minWidth: 650 }}>
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: "grey.50" }}>
+                        <TableCell sx={{ fontWeight: "bold" }}>
+                          Product
                         </TableCell>
-                        <TableCell align="right">
-                          ${item.total.toFixed(2)}
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Quantity
                         </TableCell>
-                        <TableCell align="center">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleRemoveItem(item.id)}
-                            color="error"
-                          >
-                            <DeleteIcon />
-                          </IconButton>
+                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                          Price
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: "bold" }}>
+                          Total
+                        </TableCell>
+                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                          Actions
                         </TableCell>
                       </TableRow>
-                    ))}
-                    <TableRow>
-                      <TableCell colSpan={3}>
-                        <Typography variant="subtitle1" fontWeight="bold">
-                          Total
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="right">
-                        <Typography variant="subtitle1" fontWeight="bold">
-                          ${calculateTotal().toFixed(2)}
-                        </Typography>
-                      </TableCell>
-                      <TableCell />
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
+                    </TableHead>
+                    <TableBody>
+                      {orderData.items.map((item) => (
+                        <TableRow key={item.id} hover>
+                          <TableCell sx={{ maxWidth: 200 }}>
+                            {item.productName}
+                          </TableCell>
+                          <TableCell align="center">{item.quantity}</TableCell>
+                          <TableCell align="right">
+                            ${item.price.toFixed(2)}
+                          </TableCell>
+                          <TableCell align="right">
+                            ${item.total.toFixed(2)}
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton
+                              size="small"
+                              onClick={() => handleRemoveItem(item.id)}
+                              color="error"
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      <TableRow sx={{ backgroundColor: "grey.50" }}>
+                        <TableCell colSpan={3}>
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            Total
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            ${calculateTotal().toFixed(2)}
+                          </Typography>
+                        </TableCell>
+                        <TableCell />
+                      </TableRow>
+                    </TableBody>
+                  </Table>{" "}
+                </TableContainer>
+              )}
+            </Grid>
           </Grid>
           {/* Delivery Address */}
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Delivery Address
-            </Typography>
-          </Grid>{" "}
-          <Grid item xs={12}>
-            <ResponsiveTextField
-              label="Street Address"
-              value={orderData.deliveryAddress.street}
-              onChange={(e) => handleAddressChange("street", e.target.value)}
-              fullWidth
-              required
-            />
+          <Grid container spacing={3} size={6}>
+            <Grid item xs={12} size={12}>
+              <Typography variant="h6" gutterBottom>
+                Delivery Address
+              </Typography>
+            </Grid>
+            <Grid item xs={12} size={12}>
+              <ResponsiveTextField
+                label="Street Address"
+                value={orderData.deliveryAddress.street}
+                onChange={(e) => handleAddressChange("street", e.target.value)}
+                fullWidth
+                required
+                size="large"
+              />
+            </Grid>
+            <Grid item xs={12} size={12}>
+              <ResponsiveTextField
+                label="City"
+                value={orderData.deliveryAddress.city}
+                onChange={(e) => handleAddressChange("city", e.target.value)}
+                fullWidth
+                required
+                size="large"
+              />
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <ResponsiveTextField
+                label="State"
+                value={orderData.deliveryAddress.state}
+                onChange={(e) => handleAddressChange("state", e.target.value)}
+                fullWidth
+                required
+                size="large"
+              />
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <ResponsiveTextField
+                label="ZIP Code"
+                value={orderData.deliveryAddress.zipCode}
+                onChange={(e) => handleAddressChange("zipCode", e.target.value)}
+                fullWidth
+                required
+                size="large"
+              />
+            </Grid>
+            {/* Notes */}
+            <Grid item xs={12} size={12}>
+              <ResponsiveTextField
+                label="Order Notes"
+                value={orderData.notes}
+                onChange={(e) =>
+                  setOrderData((prev) => ({ ...prev, notes: e.target.value }))
+                }
+                fullWidth
+                multiline
+                rows={3}
+                placeholder="Special delivery instructions, customer preferences, etc."
+              />
+            </Grid>{" "}
           </Grid>
-          <Grid item xs={6}>
-            <ResponsiveTextField
-              label="City"
-              value={orderData.deliveryAddress.city}
-              onChange={(e) => handleAddressChange("city", e.target.value)}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <ResponsiveTextField
-              label="State"
-              value={orderData.deliveryAddress.state}
-              onChange={(e) => handleAddressChange("state", e.target.value)}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <ResponsiveTextField
-              label="ZIP Code"
-              value={orderData.deliveryAddress.zipCode}
-              onChange={(e) => handleAddressChange("zipCode", e.target.value)}
-              fullWidth
-              required
-            />
-          </Grid>
-          {/* Notes */}
-          <Grid item xs={12}>
-            <ResponsiveTextField
-              label="Order Notes"
-              value={orderData.notes}
-              onChange={(e) =>
-                setOrderData((prev) => ({ ...prev, notes: e.target.value }))
-              }
-              fullWidth
-              multiline
-              rows={3}
-              placeholder="Special delivery instructions, customer preferences, etc."
-            />
-          </Grid>{" "}
         </Grid>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+      <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
+        <Button onClick={handleClose} variant="outlined">
+          Cancel
+        </Button>
         <Button
           onClick={handleSubmit}
           variant="contained"
           disabled={!orderData.customerId || orderData.items.length === 0}
+          sx={{ minWidth: 120 }}
         >
           Create Order
         </Button>
