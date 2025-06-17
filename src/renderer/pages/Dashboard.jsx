@@ -6,17 +6,21 @@ import {
   Box,
   CircularProgress,
   Alert,
+  Fab,
 } from "@mui/material";
 import {
   ShoppingCart as OrdersIcon,
   Inventory as InventoryIcon,
   LocalShipping as DeliveryIcon,
   AttachMoney as RevenueIcon,
+  Add as AddIcon,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { ordersAPI } from "../services/ordersService";
 import { inventoryAPI } from "../services/inventoryService";
 import { deliveriesAPI } from "../services/deliveriesService";
+import { useNotification } from "../context/NotificationContext";
 import StatsCard from "../components/Dashboard/StatsCard";
 import RecentOrders from "../components/Dashboard/RecentOrders";
 import LowStockAlert from "../components/Dashboard/LowStockAlert";
@@ -29,7 +33,9 @@ import useTranslation from "../hooks/useTranslation";
 
 function Dashboard() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
+  const { showSuccess, showError, showWarning } = useNotification();
   const { t } = useTranslation();
   const { isMobile, isTablet, getGridCols } = useResponsive();
 
@@ -62,7 +68,6 @@ function Dashboard() {
   useEffect(() => {
     loadDashboardData();
   }, []);
-
   const loadDashboardData = async () => {
     try {
       setLoading(true);
@@ -100,9 +105,21 @@ function Dashboard() {
           newToday: ordersResponse.newCustomersToday || 0,
         },
       });
+
+      // Show warnings for critical issues
+      if (inventoryResponse.lowStockCount > 0) {
+        showWarning(
+          `${inventoryResponse.lowStockCount} items are running low on stock`,
+          "Stock Alert"
+        );
+      }
+
+      showSuccess("Dashboard data refreshed successfully", "Data Updated");
     } catch (error) {
       console.error("Error loading dashboard data:", error);
-      setError("Failed to load dashboard data");
+      const errorMessage = "Failed to load dashboard data";
+      setError(errorMessage);
+      showError(errorMessage, "Dashboard Error");
     } finally {
       setLoading(false);
     }
@@ -243,7 +260,6 @@ function Dashboard() {
                 <LowStockAlert />
               </Paper>
             </Grid>
-
             {/* Delivery Stats */}
             <Grid item xs={12}>
               <Paper sx={{ p: { xs: 2, sm: 3 } }}>
@@ -256,10 +272,25 @@ function Dashboard() {
                 </Typography>
                 <DeliveryStats stats={stats.deliveries} />
               </Paper>
-            </Grid>
+            </Grid>{" "}
           </Grid>
         </Grid>
       </Grid>
+
+      {/* Floating Action Button for Quick Order Creation */}
+      <Fab
+        color="primary"
+        aria-label="Create new order"
+        sx={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          zIndex: 1000,
+        }}
+        onClick={() => navigate("/orders")}
+      >
+        <AddIcon />
+      </Fab>
     </ResponsiveContainer>
   );
 }

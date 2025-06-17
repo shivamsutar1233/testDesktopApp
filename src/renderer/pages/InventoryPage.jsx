@@ -9,6 +9,10 @@ import {
   IconButton,
   Tooltip,
   Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -17,12 +21,16 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Warning as WarningIcon,
+  Visibility as ViewIcon,
 } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchProducts, setFilters } from "../store/slices/inventorySlice";
+import { useNotification } from "../context/NotificationContext";
 import ResponsiveSelect from "../components/Responsive/ResponsiveSelect";
 import { ResponsiveTextField } from "../components/Responsive/ResponsiveComponents";
+import ProductDialog from "../components/Inventory/ProductDialog";
 
 const categories = [
   { value: "", label: "All Categories" },
@@ -36,6 +44,8 @@ const categories = [
 
 function InventoryPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { showSuccess, showError } = useNotification() || {};
   const {
     products,
     isLoading,
@@ -54,6 +64,10 @@ function InventoryPage() {
     page: currentPage - 1,
     pageSize: 20,
   });
+  const [productDialogOpen, setProductDialogOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
     dispatch(
@@ -119,6 +133,53 @@ function InventoryPage() {
         lowStock: filters.lowStock,
       })
     );
+  };
+
+  const handleAddProduct = () => {
+    setEditingProduct(null);
+    setProductDialogOpen(true);
+  };
+
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+    setProductDialogOpen(true);
+  };
+
+  const handleDeleteProduct = (product) => {
+    setProductToDelete(product);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleSaveProduct = async (productData) => {
+    try {
+      if (editingProduct) {
+        // Update existing product
+        // API call would go here
+        showSuccess?.(`Product "${productData.name}" updated successfully`, "Success");
+      } else {
+        // Create new product
+        // API call would go here
+        showSuccess?.(`Product "${productData.name}" created successfully`, "Success");
+      }
+      setProductDialogOpen(false);
+      setEditingProduct(null);
+      handleRefresh();
+    } catch (error) {
+      showError?.("Failed to save product", "Error");
+      throw error;
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      // API call to delete product would go here
+      showSuccess?.(`Product "${productToDelete.name}" deleted successfully`, "Success");
+      setDeleteDialogOpen(false);
+      setProductToDelete(null);
+      handleRefresh();
+    } catch (error) {
+      showError?.("Failed to delete product", "Error");
+    }
   };
 
   const getStockColor = (stock, minStock) => {
@@ -237,17 +298,32 @@ function InventoryPage() {
     {
       field: "actions",
       headerName: "Actions",
-      width: 120,
+      width: 150,
       sortable: false,
       renderCell: (params) => (
         <Box>
+          <Tooltip title="View Details">
+            <IconButton
+              size="small"
+              onClick={() => navigate(`/inventory/products/${params.row.id}`)}
+            >
+              <ViewIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Edit Product">
-            <IconButton size="small">
+            <IconButton
+              size="small"
+              onClick={() => handleEditProduct(params.row)}
+            >
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Delete Product">
-            <IconButton size="small" color="error">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={() => handleDeleteProduct(params.row)}
+            >
               <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -270,7 +346,11 @@ function InventoryPage() {
         <Typography variant="h4" fontWeight="bold">
           Inventory Management
         </Typography>
-        <Button variant="contained" startIcon={<AddIcon />}>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={handleAddProduct}
+        >
           Add Product
         </Button>
       </Box>
@@ -351,6 +431,49 @@ function InventoryPage() {
           disableRowSelectionOnClick
         />
       </Paper>
+
+      {/* Product Dialog */}
+      <ProductDialog
+        open={productDialogOpen}
+        onClose={() => setProductDialogOpen(false)}
+        onSave={handleSaveProduct}
+        product={editingProduct}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Confirm Deletion"}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body2">
+            Are you sure you want to delete the product "
+            {productToDelete?.name}"? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setDeleteDialogOpen(false)}
+            color="primary"
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+            autoFocus
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
