@@ -18,11 +18,9 @@ import {
   Search as SearchIcon,
   Refresh as RefreshIcon,
   Add as AddIcon,
-  LocalShipping as DeliveryIcon,
   CheckCircle as CompleteIcon,
   Visibility as ViewIcon,
   MyLocation as TrackIcon,
-  Phone,
 } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import ResponsiveSelect from "../components/Responsive/ResponsiveSelect";
@@ -98,14 +96,17 @@ function DeliveriesPage() {
       priority: "High",
       trackingData: {
         currentLocation: { lat: 40.7589, lng: -73.9851 },
-        route: [],      },
+        route: [],
+      },
     },
   ]);
 
   // Handle highlighting delivery when navigated from OrderDetailsPage
   useEffect(() => {
     if (location.state?.highlightDelivery) {
-      const delivery = deliveries.find(d => d.id === location.state.highlightDelivery);
+      const delivery = deliveries.find(
+        (d) => d.id === location.state.highlightDelivery
+      );
       if (delivery) {
         setTimeout(() => {
           handleTrackDelivery(delivery);
@@ -265,7 +266,8 @@ function DeliveriesPage() {
           </Typography>
         );
       },
-    },    {
+    },
+    {
       field: "actions",
       headerName: "Actions",
       width: 180,
@@ -320,7 +322,6 @@ function DeliveriesPage() {
           Schedule Delivery
         </Button>
       </Box>
-
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
@@ -359,7 +360,8 @@ function DeliveriesPage() {
               options={deliveryDrivers}
               minWidth={150}
             />
-          </Grid>          <Grid item xs={12} md={3}>
+          </Grid>{" "}
+          <Grid item xs={12} md={3}>
             <Box display="flex" gap={1} justifyContent="flex-end">
               <Tooltip title="Refresh">
                 <IconButton onClick={handleRefresh}>
@@ -369,7 +371,8 @@ function DeliveriesPage() {
             </Box>
           </Grid>
         </Grid>
-      </Paper>      {/* Deliveries Table */}
+      </Paper>{" "}
+      {/* Deliveries Table */}
       <Paper sx={{ height: 600, width: "100%" }}>
         <DataGrid
           rows={deliveries}
@@ -384,7 +387,6 @@ function DeliveriesPage() {
           disableRowSelectionOnClick
         />
       </Paper>
-
       {/* Delivery Tracking Dialog */}
       <Dialog
         open={trackingDialogOpen}
@@ -396,8 +398,14 @@ function DeliveriesPage() {
             height: "80vh",
           },
         }}
-      >        <DialogTitle>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+      >
+        {" "}
+        <DialogTitle>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Box>
               <Typography variant="h6">
                 Track Delivery - {selectedDelivery?.orderId}

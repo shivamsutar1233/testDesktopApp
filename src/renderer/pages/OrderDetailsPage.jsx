@@ -462,7 +462,6 @@ function OrderDetailsPage() {
           <Tab label="History" icon={<History />} />
           <Tab label="Notes" icon={<Notes />} />
         </Tabs>
-
         {/* Order Details Tab */}
         <TabPanel value={activeTab} index={0}>
           <Grid container spacing={3}>
@@ -583,7 +582,6 @@ function OrderDetailsPage() {
             </Grid>
           </Grid>
         </TabPanel>
-
         {/* Customer Info Tab */}
         <TabPanel value={activeTab} index={1}>
           <Card>
@@ -648,18 +646,26 @@ function OrderDetailsPage() {
               </Grid>
             </CardContent>
           </Card>
-        </TabPanel>        {/* Delivery Tab */}
+        </TabPanel>{" "}
+        {/* Delivery Tab */}
         <TabPanel value={activeTab} index={2}>
           {order.delivery && (
             <Box>
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={2}
+              >
                 <Typography variant="h6">Delivery Information</Typography>
                 <Button
                   variant="outlined"
                   startIcon={<LocalShipping />}
-                  onClick={() => navigate('/deliveries', { 
-                    state: { highlightDelivery: order.delivery.id } 
-                  })}
+                  onClick={() =>
+                    navigate("/deliveries", {
+                      state: { highlightDelivery: order.delivery.id },
+                    })
+                  }
                 >
                   View in Deliveries Page
                 </Button>
@@ -687,7 +693,6 @@ function OrderDetailsPage() {
             </Box>
           )}
         </TabPanel>
-
         {/* History Tab */}
         <TabPanel value={activeTab} index={3}>
           <Card>
@@ -723,7 +728,6 @@ function OrderDetailsPage() {
             </CardContent>
           </Card>
         </TabPanel>
-
         {/* Notes Tab */}
         <TabPanel value={activeTab} index={4}>
           <Card>
