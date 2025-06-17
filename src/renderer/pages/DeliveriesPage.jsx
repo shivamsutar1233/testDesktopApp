@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -8,6 +9,10 @@ import {
   Chip,
   IconButton,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -15,10 +20,15 @@ import {
   Add as AddIcon,
   LocalShipping as DeliveryIcon,
   CheckCircle as CompleteIcon,
+  Visibility as ViewIcon,
+  MyLocation as TrackIcon,
+  Phone,
 } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 import ResponsiveSelect from "../components/Responsive/ResponsiveSelect";
 import { ResponsiveTextField } from "../components/Responsive/ResponsiveComponents";
+import DeliveryTracker from "../components/Deliveries/DeliveryTracker";
+import { useNotification } from "../context/NotificationContext";
 
 const deliveryStatuses = [
   { value: "", label: "All Statuses" },
@@ -39,31 +49,70 @@ const deliveryDrivers = [
 ];
 
 function DeliveriesPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { showSuccess, showError } = useNotification();
+
   const [searchText, setSearchText] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedDriver, setSelectedDriver] = useState("");
+  const [trackingDialogOpen, setTrackingDialogOpen] = useState(false);
+  const [selectedDelivery, setSelectedDelivery] = useState(null);
   const [deliveries] = useState([
     {
       id: 1,
       orderId: "ORD-001",
       customerName: "John Smith",
       customerAddress: "123 Main St, City",
+      customerId: 1,
       driverName: "John Doe",
+      driverId: "driver_001",
+      driverPhone: "+1 (555) 123-4567",
       status: "in_progress",
       scheduledTime: "2025-06-15T14:30:00",
       estimatedDelivery: "2025-06-15T15:00:00",
+      estimatedDeliveryTime: "2025-06-15T15:00:00",
+      assignedAt: "2025-06-15T14:00:00",
+      lastUpdate: "2025-06-15T14:45:00",
+      priority: "Normal",
+      trackingData: {
+        currentLocation: { lat: 40.7128, lng: -74.006 },
+        route: [],
+      },
     },
     {
       id: 2,
       orderId: "ORD-002",
       customerName: "Sarah Johnson",
       customerAddress: "456 Oak Ave, City",
+      customerId: 2,
       driverName: "Jane Smith",
+      driverId: "driver_002",
+      driverPhone: "+1 (555) 987-6543",
       status: "delivered",
       scheduledTime: "2025-06-15T13:00:00",
       deliveredTime: "2025-06-15T13:45:00",
+      estimatedDeliveryTime: "2025-06-15T13:30:00",
+      assignedAt: "2025-06-15T12:30:00",
+      lastUpdate: "2025-06-15T13:45:00",
+      priority: "High",
+      trackingData: {
+        currentLocation: { lat: 40.7589, lng: -73.9851 },
+        route: [],      },
     },
   ]);
+
+  // Handle highlighting delivery when navigated from OrderDetailsPage
+  useEffect(() => {
+    if (location.state?.highlightDelivery) {
+      const delivery = deliveries.find(d => d.id === location.state.highlightDelivery);
+      if (delivery) {
+        setTimeout(() => {
+          handleTrackDelivery(delivery);
+        }, 500);
+      }
+    }
+  }, [location.state]);
 
   const handleSearch = () => {
     // Implement search logic
@@ -78,6 +127,56 @@ function DeliveriesPage() {
   const handleDriverChange = (driver) => {
     setSelectedDriver(driver);
     // Implement driver filter logic
+  };
+
+  const handleTrackDelivery = (delivery) => {
+    setSelectedDelivery(delivery);
+    setTrackingDialogOpen(true);
+  };
+
+  const handleViewOrderDetails = (orderId) => {
+    navigate(`/orders/${orderId.replace("ORD-", "")}`);
+  };
+
+  const handleStatusUpdate = async (deliveryId, newStatus, note) => {
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      showSuccess(`Delivery status updated to ${newStatus}`, "Status Updated");
+      // Update local state or refetch data
+    } catch (error) {
+      showError("Failed to update delivery status", "Error");
+      throw error;
+    }
+  };
+
+  const handleContactCustomer = async (customerId) => {
+    try {
+      const delivery = deliveries.find((d) => d.customerId === customerId);
+      if (delivery) {
+        // For demo purposes, we'll use a mock phone number
+        window.open(`tel:+1-555-CUSTOMER`);
+      }
+    } catch (error) {
+      showError("Failed to contact customer", "Error");
+    }
+  };
+
+  const handleViewRoute = (deliveryId) => {
+    const delivery = deliveries.find((d) => d.id === deliveryId);
+    if (delivery) {
+      setSelectedDelivery(delivery);
+      setTrackingDialogOpen(true);
+    }
+  };
+
+  const handleRefresh = async () => {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      showSuccess("Deliveries refreshed", "Success");
+    } catch (error) {
+      showError("Failed to refresh deliveries", "Error");
+    }
   };
 
   const getStatusColor = (status) => {
@@ -166,17 +265,29 @@ function DeliveriesPage() {
           </Typography>
         );
       },
-    },
-    {
+    },    {
       field: "actions",
       headerName: "Actions",
-      width: 120,
+      width: 180,
       sortable: false,
       renderCell: (params) => (
-        <Box>
+        <Box display="flex" gap={0.5}>
+          <Tooltip title="View Order Details">
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={() => handleViewOrderDetails(params.row.orderId)}
+            >
+              <ViewIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Track Delivery">
-            <IconButton size="small" color="primary">
-              <DeliveryIcon fontSize="small" />
+            <IconButton
+              size="small"
+              color="secondary"
+              onClick={() => handleTrackDelivery(params.row)}
+            >
+              <TrackIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           {params.row.status === "in_progress" && (
@@ -248,20 +359,17 @@ function DeliveriesPage() {
               options={deliveryDrivers}
               minWidth={150}
             />
-          </Grid>
-          <Grid item xs={12} md={3}>
+          </Grid>          <Grid item xs={12} md={3}>
             <Box display="flex" gap={1} justifyContent="flex-end">
               <Tooltip title="Refresh">
-                <IconButton onClick={() => console.log("Refresh")}>
+                <IconButton onClick={handleRefresh}>
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
             </Box>
           </Grid>
         </Grid>
-      </Paper>
-
-      {/* Deliveries Table */}
+      </Paper>      {/* Deliveries Table */}
       <Paper sx={{ height: 600, width: "100%" }}>
         <DataGrid
           rows={deliveries}
@@ -276,6 +384,64 @@ function DeliveriesPage() {
           disableRowSelectionOnClick
         />
       </Paper>
+
+      {/* Delivery Tracking Dialog */}
+      <Dialog
+        open={trackingDialogOpen}
+        onClose={() => setTrackingDialogOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        sx={{
+          "& .MuiDialog-paper": {
+            height: "80vh",
+          },
+        }}
+      >        <DialogTitle>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box>
+              <Typography variant="h6">
+                Track Delivery - {selectedDelivery?.orderId}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Customer: {selectedDelivery?.customerName}
+              </Typography>
+            </Box>
+            <Box display="flex" gap={1}>
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<ViewIcon />}
+                onClick={() => {
+                  setTrackingDialogOpen(false);
+                  handleViewOrderDetails(selectedDelivery?.orderId);
+                }}
+              >
+                View Order
+              </Button>
+              <IconButton
+                onClick={() => setTrackingDialogOpen(false)}
+                size="small"
+              >
+                ×
+              </IconButton>
+            </Box>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ p: 0 }}>
+          {selectedDelivery && (
+            <DeliveryTracker
+              delivery={selectedDelivery}
+              onStatusUpdate={handleStatusUpdate}
+              onContactCustomer={handleContactCustomer}
+              onViewRoute={handleViewRoute}
+              canEdit={true}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setTrackingDialogOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

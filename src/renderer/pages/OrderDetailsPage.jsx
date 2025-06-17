@@ -648,31 +648,43 @@ function OrderDetailsPage() {
               </Grid>
             </CardContent>
           </Card>
-        </TabPanel>
-
-        {/* Delivery Tab */}
+        </TabPanel>        {/* Delivery Tab */}
         <TabPanel value={activeTab} index={2}>
           {order.delivery && (
-            <DeliveryCard
-              delivery={{
-                id: order.delivery.id,
-                orderId: order.id,
-                status: order.delivery.status,
-                customerName: order.customer.name,
-                customerAddress: order.customer.address,
-                customerId: order.customer.id,
-                driverName: order.delivery.driverName,
-                driverPhone: order.delivery.driverPhone,
-                estimatedDeliveryTime: order.delivery.estimatedTime,
-                priority: order.priority,
-                trackingData: order.delivery.trackingNumber,
-                lastUpdate: order.updatedAt,
-              }}
-              onStatusUpdate={() => {}}
-              onContactCustomer={() => {}}
-              onViewRoute={() => {}}
-              canEdit={true}
-            />
+            <Box>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h6">Delivery Information</Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<LocalShipping />}
+                  onClick={() => navigate('/deliveries', { 
+                    state: { highlightDelivery: order.delivery.id } 
+                  })}
+                >
+                  View in Deliveries Page
+                </Button>
+              </Box>
+              <DeliveryCard
+                delivery={{
+                  id: order.delivery.id,
+                  orderId: order.id,
+                  status: order.delivery.status,
+                  customerName: order.customer.name,
+                  customerAddress: order.customer.address,
+                  customerId: order.customer.id,
+                  driverName: order.delivery.driverName,
+                  driverPhone: order.delivery.driverPhone,
+                  estimatedDeliveryTime: order.delivery.estimatedTime,
+                  priority: order.priority,
+                  trackingData: order.delivery.trackingNumber,
+                  lastUpdate: order.updatedAt,
+                }}
+                onStatusUpdate={() => {}}
+                onContactCustomer={() => {}}
+                onViewRoute={() => {}}
+                canEdit={true}
+              />
+            </Box>
           )}
         </TabPanel>
 
