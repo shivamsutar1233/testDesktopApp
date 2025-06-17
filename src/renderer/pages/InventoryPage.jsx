@@ -155,11 +155,17 @@ function InventoryPage() {
       if (editingProduct) {
         // Update existing product
         // API call would go here
-        showSuccess?.(`Product "${productData.name}" updated successfully`, "Success");
+        showSuccess?.(
+          `Product "${productData.name}" updated successfully`,
+          "Success"
+        );
       } else {
         // Create new product
         // API call would go here
-        showSuccess?.(`Product "${productData.name}" created successfully`, "Success");
+        showSuccess?.(
+          `Product "${productData.name}" created successfully`,
+          "Success"
+        );
       }
       setProductDialogOpen(false);
       setEditingProduct(null);
@@ -173,7 +179,10 @@ function InventoryPage() {
   const handleConfirmDelete = async () => {
     try {
       // API call to delete product would go here
-      showSuccess?.(`Product "${productToDelete.name}" deleted successfully`, "Success");
+      showSuccess?.(
+        `Product "${productToDelete.name}" deleted successfully`,
+        "Success"
+      );
       setDeleteDialogOpen(false);
       setProductToDelete(null);
       handleRefresh();
@@ -447,13 +456,11 @@ function InventoryPage() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {"Confirm Deletion"}
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>
         <DialogContent>
           <Typography variant="body2">
-            Are you sure you want to delete the product "
-            {productToDelete?.name}"? This action cannot be undone.
+            Are you sure you want to delete the product "{productToDelete?.name}
+            "? This action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions>

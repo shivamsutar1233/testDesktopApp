@@ -21,18 +21,12 @@ import {
   InputAdornment,
   Divider,
 } from "@mui/material";
-import {
-  CloudUpload,
-  Delete,
-  Warning,
-  Info,
-  LocalOffer,
-} from "@mui/icons-material";
+import { CloudUpload, Delete, Warning, LocalOffer } from "@mui/icons-material";
 import { useNotification } from "../../context/NotificationContext";
 
 const PRODUCT_CATEGORIES = [
   "Fruits",
-  "Vegetables", 
+  "Vegetables",
   "Dairy",
   "Meat & Poultry",
   "Bakery",
@@ -106,12 +100,18 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
         brand: product.brand || "",
         weight: product.weight?.toString() || "",
         dimensions: product.dimensions || "",
-        expiryDate: product.expiryDate ? new Date(product.expiryDate).toISOString().split('T')[0] : "",
+        expiryDate: product.expiryDate
+          ? new Date(product.expiryDate).toISOString().split("T")[0]
+          : "",
         isActive: product.isActive !== undefined ? product.isActive : true,
         isOnSale: product.isOnSale || false,
         salePrice: product.salePrice?.toString() || "",
-        saleStartDate: product.saleStartDate ? new Date(product.saleStartDate).toISOString().split('T')[0] : "",
-        saleEndDate: product.saleEndDate ? new Date(product.saleEndDate).toISOString().split('T')[0] : "",
+        saleStartDate: product.saleStartDate
+          ? new Date(product.saleStartDate).toISOString().split("T")[0]
+          : "",
+        saleEndDate: product.saleEndDate
+          ? new Date(product.saleEndDate).toISOString().split("T")[0]
+          : "",
         tags: product.tags || [],
         notes: product.notes || "",
         image: null,
@@ -156,16 +156,16 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [field]: ""
+        [field]: "",
       }));
     }
   };
@@ -174,11 +174,11 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
     const file = event.target.files[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         showError?.("Please select a valid image file", "Invalid File");
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         showError?.("Image size must be less than 5MB", "File Too Large");
@@ -187,10 +187,10 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           image: file,
-          imagePreview: e.target.result
+          imagePreview: e.target.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -198,10 +198,10 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
   };
 
   const removeImage = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       image: null,
-      imagePreview: null
+      imagePreview: null,
     }));
   };
 
@@ -236,17 +236,27 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
       newErrors.maxStockLevel = "Maximum stock level cannot be negative";
     }
 
-    if (formData.minStockLevel && formData.maxStockLevel && 
-        parseInt(formData.minStockLevel) > parseInt(formData.maxStockLevel)) {
-      newErrors.maxStockLevel = "Maximum stock level must be greater than minimum";
+    if (
+      formData.minStockLevel &&
+      formData.maxStockLevel &&
+      parseInt(formData.minStockLevel) > parseInt(formData.maxStockLevel)
+    ) {
+      newErrors.maxStockLevel =
+        "Maximum stock level must be greater than minimum";
     }
 
-    if (formData.isOnSale && (!formData.salePrice || parseFloat(formData.salePrice) <= 0)) {
+    if (
+      formData.isOnSale &&
+      (!formData.salePrice || parseFloat(formData.salePrice) <= 0)
+    ) {
       newErrors.salePrice = "Sale price is required when product is on sale";
     }
 
-    if (formData.salePrice && formData.price && 
-        parseFloat(formData.salePrice) >= parseFloat(formData.price)) {
+    if (
+      formData.salePrice &&
+      formData.price &&
+      parseFloat(formData.salePrice) >= parseFloat(formData.price)
+    ) {
       newErrors.salePrice = "Sale price must be less than regular price";
     }
 
@@ -254,8 +264,11 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
       newErrors.expiryDate = "Expiry date must be in the future";
     }
 
-    if (formData.saleStartDate && formData.saleEndDate && 
-        new Date(formData.saleStartDate) >= new Date(formData.saleEndDate)) {
+    if (
+      formData.saleStartDate &&
+      formData.saleEndDate &&
+      new Date(formData.saleStartDate) >= new Date(formData.saleEndDate)
+    ) {
       newErrors.saleEndDate = "Sale end date must be after start date";
     }
 
@@ -275,13 +288,23 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
         price: parseFloat(formData.price),
         cost: formData.cost ? parseFloat(formData.cost) : null,
         stock: parseInt(formData.stock),
-        minStockLevel: formData.minStockLevel ? parseInt(formData.minStockLevel) : null,
-        maxStockLevel: formData.maxStockLevel ? parseInt(formData.maxStockLevel) : null,
+        minStockLevel: formData.minStockLevel
+          ? parseInt(formData.minStockLevel)
+          : null,
+        maxStockLevel: formData.maxStockLevel
+          ? parseInt(formData.maxStockLevel)
+          : null,
         weight: formData.weight ? parseFloat(formData.weight) : null,
         salePrice: formData.salePrice ? parseFloat(formData.salePrice) : null,
-        expiryDate: formData.expiryDate ? new Date(formData.expiryDate).toISOString() : null,
-        saleStartDate: formData.saleStartDate ? new Date(formData.saleStartDate).toISOString() : null,
-        saleEndDate: formData.saleEndDate ? new Date(formData.saleEndDate).toISOString() : null,
+        expiryDate: formData.expiryDate
+          ? new Date(formData.expiryDate).toISOString()
+          : null,
+        saleStartDate: formData.saleStartDate
+          ? new Date(formData.saleStartDate).toISOString()
+          : null,
+        saleEndDate: formData.saleEndDate
+          ? new Date(formData.saleEndDate).toISOString()
+          : null,
         id: mode === "edit" ? product?.id : undefined,
       };
 
@@ -327,7 +350,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
       <DialogTitle>
         {mode === "edit" ? "Edit Product" : "Add New Product"}
       </DialogTitle>
-      
+
       <DialogContent>
         <Box sx={{ mt: 2 }}>
           <Grid container spacing={3}>
@@ -337,7 +360,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                 <Typography variant="subtitle2" gutterBottom>
                   Product Image
                 </Typography>
-                
+
                 {formData.imagePreview ? (
                   <Box sx={{ position: "relative", display: "inline-block" }}>
                     <Avatar
@@ -370,7 +393,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                     <CloudUpload sx={{ fontSize: 48, color: "#ccc" }} />
                   </Box>
                 )}
-                
+
                 <input
                   accept="image/*"
                   type="file"
@@ -396,7 +419,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
               <Typography variant="h6" gutterBottom>
                 Basic Information
               </Typography>
-              
+
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                   <TextField
@@ -409,7 +432,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                     required
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -419,7 +442,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                     helperText="Auto-generated if empty"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -427,16 +450,20 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                     rows={3}
                     label="Description"
                     value={formData.description}
-                    onChange={(e) => handleInputChange("description", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("description", e.target.value)
+                    }
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth error={!!errors.category}>
                     <InputLabel>Category</InputLabel>
                     <Select
                       value={formData.category}
-                      onChange={(e) => handleInputChange("category", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("category", e.target.value)
+                      }
                       label="Category"
                     >
                       {PRODUCT_CATEGORIES.map((category) => (
@@ -446,13 +473,17 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                       ))}
                     </Select>
                     {errors.category && (
-                      <Typography variant="caption" color="error" sx={{ mt: 1 }}>
+                      <Typography
+                        variant="caption"
+                        color="error"
+                        sx={{ mt: 1 }}
+                      >
                         {errors.category}
                       </Typography>
                     )}
                   </FormControl>
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
@@ -470,7 +501,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
               <Typography variant="h6" gutterBottom>
                 Pricing & Costs
               </Typography>
-              
+
               <Grid container spacing={2}>
                 <Grid item xs={12} md={3}>
                   <TextField
@@ -482,12 +513,14 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                     error={!!errors.price}
                     helperText={errors.price}
                     InputProps={{
-                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
                     }}
                     required
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={3}>
                   <TextField
                     fullWidth
@@ -498,17 +531,21 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                     error={!!errors.cost}
                     helperText={errors.cost}
                     InputProps={{
-                      startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                      startAdornment: (
+                        <InputAdornment position="start">$</InputAdornment>
+                      ),
                     }}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={3}>
                   <FormControl fullWidth>
                     <InputLabel>Unit</InputLabel>
                     <Select
                       value={formData.unit}
-                      onChange={(e) => handleInputChange("unit", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("unit", e.target.value)
+                      }
                       label="Unit"
                     >
                       {UNITS.map((unit) => (
@@ -519,7 +556,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                     </Select>
                   </FormControl>
                 </Grid>
-                
+
                 <Grid item xs={12} md={3}>
                   {formData.price && formData.cost && (
                     <Box sx={{ p: 2, bgcolor: "info.light", borderRadius: 1 }}>
@@ -538,7 +575,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
               <Typography variant="h6" gutterBottom>
                 Inventory Management
               </Typography>
-              
+
               <Grid container spacing={2}>
                 <Grid item xs={12} md={4}>
                   <TextField
@@ -552,47 +589,58 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                     required
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={4}>
                   <TextField
                     fullWidth
                     label="Min Stock Level"
                     type="number"
                     value={formData.minStockLevel}
-                    onChange={(e) => handleInputChange("minStockLevel", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("minStockLevel", e.target.value)
+                    }
                     error={!!errors.minStockLevel}
-                    helperText={errors.minStockLevel || "Alert when stock falls below this level"}
+                    helperText={
+                      errors.minStockLevel ||
+                      "Alert when stock falls below this level"
+                    }
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={4}>
                   <TextField
                     fullWidth
                     label="Max Stock Level"
                     type="number"
                     value={formData.maxStockLevel}
-                    onChange={(e) => handleInputChange("maxStockLevel", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("maxStockLevel", e.target.value)
+                    }
                     error={!!errors.maxStockLevel}
                     helperText={errors.maxStockLevel}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Supplier"
                     value={formData.supplier}
-                    onChange={(e) => handleInputChange("supplier", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("supplier", e.target.value)
+                    }
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Expiry Date"
                     type="date"
                     value={formData.expiryDate}
-                    onChange={(e) => handleInputChange("expiryDate", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("expiryDate", e.target.value)
+                    }
                     error={!!errors.expiryDate}
                     helperText={errors.expiryDate}
                     InputLabelProps={{
@@ -606,15 +654,17 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
             {/* Sale Information */}
             <Grid item xs={12}>
               <Divider sx={{ my: 2 }} />
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-                <Typography variant="h6">
-                  Sale Information
-                </Typography>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
+              >
+                <Typography variant="h6">Sale Information</Typography>
                 <FormControlLabel
                   control={
                     <Switch
                       checked={formData.isOnSale}
-                      onChange={(e) => handleInputChange("isOnSale", e.target.checked)}
+                      onChange={(e) =>
+                        handleInputChange("isOnSale", e.target.checked)
+                      }
                     />
                   }
                   label="On Sale"
@@ -628,7 +678,7 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                   />
                 )}
               </Box>
-              
+
               {formData.isOnSale && (
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={4}>
@@ -637,35 +687,43 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
                       label="Sale Price"
                       type="number"
                       value={formData.salePrice}
-                      onChange={(e) => handleInputChange("salePrice", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("salePrice", e.target.value)
+                      }
                       error={!!errors.salePrice}
                       helperText={errors.salePrice}
                       InputProps={{
-                        startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                        startAdornment: (
+                          <InputAdornment position="start">$</InputAdornment>
+                        ),
                       }}
                     />
                   </Grid>
-                  
+
                   <Grid item xs={12} md={4}>
                     <TextField
                       fullWidth
                       label="Sale Start Date"
                       type="date"
                       value={formData.saleStartDate}
-                      onChange={(e) => handleInputChange("saleStartDate", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("saleStartDate", e.target.value)
+                      }
                       InputLabelProps={{
                         shrink: true,
                       }}
                     />
                   </Grid>
-                  
+
                   <Grid item xs={12} md={4}>
                     <TextField
                       fullWidth
                       label="Sale End Date"
                       type="date"
                       value={formData.saleEndDate}
-                      onChange={(e) => handleInputChange("saleEndDate", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("saleEndDate", e.target.value)
+                      }
                       error={!!errors.saleEndDate}
                       helperText={errors.saleEndDate}
                       InputLabelProps={{
@@ -683,52 +741,62 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
               <Typography variant="h6" gutterBottom>
                 Additional Details
               </Typography>
-              
+
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Barcode"
                     value={formData.barcode}
-                    onChange={(e) => handleInputChange("barcode", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("barcode", e.target.value)
+                    }
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Weight"
                     type="number"
                     value={formData.weight}
-                    onChange={(e) => handleInputChange("weight", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("weight", e.target.value)
+                    }
                     InputProps={{
-                      endAdornment: <InputAdornment position="end">kg</InputAdornment>,
+                      endAdornment: (
+                        <InputAdornment position="end">kg</InputAdornment>
+                      ),
                     }}
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <TextField
                     fullWidth
                     label="Dimensions"
                     value={formData.dimensions}
-                    onChange={(e) => handleInputChange("dimensions", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("dimensions", e.target.value)
+                    }
                     placeholder="L x W x H (cm)"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12} md={6}>
                   <FormControlLabel
                     control={
                       <Switch
                         checked={formData.isActive}
-                        onChange={(e) => handleInputChange("isActive", e.target.checked)}
+                        onChange={(e) =>
+                          handleInputChange("isActive", e.target.checked)
+                        }
                       />
                     }
                     label="Active Product"
                   />
                 </Grid>
-                
+
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
@@ -744,26 +812,29 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
             </Grid>
 
             {/* Validation Alerts */}
-            {formData.stock && formData.minStockLevel && 
-             parseInt(formData.stock) <= parseInt(formData.minStockLevel) && (
-              <Grid item xs={12}>
-                <Alert severity="warning" icon={<Warning />}>
-                  Current stock ({formData.stock}) is at or below minimum level ({formData.minStockLevel})
-                </Alert>
-              </Grid>
-            )}
-            
-            {formData.expiryDate && new Date(formData.expiryDate) <= new Date() && (
-              <Grid item xs={12}>
-                <Alert severity="error">
-                  Product expiry date is in the past
-                </Alert>
-              </Grid>
-            )}
+            {formData.stock &&
+              formData.minStockLevel &&
+              parseInt(formData.stock) <= parseInt(formData.minStockLevel) && (
+                <Grid item xs={12}>
+                  <Alert severity="warning" icon={<Warning />}>
+                    Current stock ({formData.stock}) is at or below minimum
+                    level ({formData.minStockLevel})
+                  </Alert>
+                </Grid>
+              )}
+
+            {formData.expiryDate &&
+              new Date(formData.expiryDate) <= new Date() && (
+                <Grid item xs={12}>
+                  <Alert severity="error">
+                    Product expiry date is in the past
+                  </Alert>
+                </Grid>
+              )}
           </Grid>
         </Box>
       </DialogContent>
-      
+
       <DialogActions sx={{ p: 3 }}>
         <Button onClick={onClose} disabled={isSubmitting}>
           Cancel
@@ -773,7 +844,11 @@ function ProductDialog({ open, onClose, product, onSave, mode = "add" }) {
           variant="contained"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Saving..." : mode === "edit" ? "Update Product" : "Add Product"}
+          {isSubmitting
+            ? "Saving..."
+            : mode === "edit"
+            ? "Update Product"
+            : "Add Product"}
         </Button>
       </DialogActions>
     </Dialog>

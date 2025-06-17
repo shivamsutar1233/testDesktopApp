@@ -18,11 +18,6 @@ import {
   Alert,
   Tooltip,
   Badge,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Avatar,
   CardMedia,
 } from "@mui/material";
 import {
@@ -67,13 +62,22 @@ function getStockStatus(stock, minStockLevel) {
   return "in_stock";
 }
 
-function ProductCard({ product, onEdit, onDelete, onUpdateStock, onViewDetails }) {
+function ProductCard({
+  product,
+  onEdit,
+  onDelete,
+  onUpdateStock,
+  onViewDetails,
+}) {
   const navigate = useNavigate();
   const { showSuccess, showError } = useNotification() || {};
   const [stockUpdateOpen, setStockUpdateOpen] = useState(false);
   const [newStockQuantity, setNewStockQuantity] = useState(product?.stock || 0);
 
-  const stockStatus = getStockStatus(product?.stock || 0, product?.minStockLevel || 0);
+  const stockStatus = getStockStatus(
+    product?.stock || 0,
+    product?.minStockLevel || 0
+  );
   const statusInfo = STOCK_STATUS[stockStatus] || STOCK_STATUS.out_of_stock;
 
   const handleStockUpdate = async () => {
@@ -144,22 +148,22 @@ function ProductCard({ product, onEdit, onDelete, onUpdateStock, onViewDetails }
           height="160"
           image={product.image}
           alt={product.name}
-          sx={{ objectFit: 'cover', cursor: 'pointer' }}
+          sx={{ objectFit: "cover", cursor: "pointer" }}
           onClick={handleViewDetails}
         />
       ) : (
         <Box
           sx={{
             height: 160,
-            bgcolor: 'grey.100',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer'
+            bgcolor: "grey.100",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
           }}
           onClick={handleViewDetails}
         >
-          <Inventory sx={{ fontSize: 48, color: 'grey.400' }} />
+          <Inventory sx={{ fontSize: 48, color: "grey.400" }} />
         </Box>
       )}
 
@@ -169,7 +173,12 @@ function ProductCard({ product, onEdit, onDelete, onUpdateStock, onViewDetails }
         </Typography>
 
         {product.sku && (
-          <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            display="block"
+            gutterBottom
+          >
             SKU: {product.sku}
           </Typography>
         )}
@@ -178,15 +187,17 @@ function ProductCard({ product, onEdit, onDelete, onUpdateStock, onViewDetails }
           Category: {product.category || "Uncategorized"}
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
           <Typography variant="h5" color="primary" fontWeight="bold">
-            {product.isOnSale ? formatPrice(product.salePrice) : formatPrice(product.price)}
+            {product.isOnSale
+              ? formatPrice(product.salePrice)
+              : formatPrice(product.price)}
           </Typography>
           {product.isOnSale && (
             <>
               <Typography
                 variant="body2"
-                sx={{ textDecoration: 'line-through', color: 'text.secondary' }}
+                sx={{ textDecoration: "line-through", color: "text.secondary" }}
               >
                 {formatPrice(product.price)}
               </Typography>
@@ -252,7 +263,7 @@ function ProductCard({ product, onEdit, onDelete, onUpdateStock, onViewDetails }
       </CardContent>
 
       <CardActions sx={{ justifyContent: "space-between", px: 2, pb: 2 }}>
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
+        <Box sx={{ display: "flex", gap: 0.5 }}>
           <Tooltip title="View Details">
             <IconButton
               size="small"
@@ -278,7 +289,7 @@ function ProductCard({ product, onEdit, onDelete, onUpdateStock, onViewDetails }
           </IconButton>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
+        <Box sx={{ display: "flex", gap: 0.5 }}>
           <Tooltip title="Update Stock">
             <IconButton
               size="small"
@@ -315,7 +326,9 @@ function ProductCard({ product, onEdit, onDelete, onUpdateStock, onViewDetails }
                 <InputAdornment position="start">
                   <IconButton
                     size="small"
-                    onClick={() => setNewStockQuantity(Math.max(0, newStockQuantity - 1))}
+                    onClick={() =>
+                      setNewStockQuantity(Math.max(0, newStockQuantity - 1))
+                    }
                   >
                     <Remove />
                   </IconButton>
@@ -329,7 +342,11 @@ function ProductCard({ product, onEdit, onDelete, onUpdateStock, onViewDetails }
                   >
                     <Add />
                   </IconButton>
-                  <Button size="small" onClick={handleStockUpdate} sx={{ ml: 1 }}>
+                  <Button
+                    size="small"
+                    onClick={handleStockUpdate}
+                    sx={{ ml: 1 }}
+                  >
                     Update
                   </Button>
                 </InputAdornment>
@@ -369,13 +386,17 @@ function ProductGrid({
 
     const matchesStock =
       !stockFilter ||
-      getStockStatus(product?.stock || 0, product?.minStockLevel || 0) === stockFilter;
+      getStockStatus(product?.stock || 0, product?.minStockLevel || 0) ===
+        stockFilter;
 
     return matchesSearch && matchesCategory && matchesStock;
   });
 
   const stockCounts = products.reduce((acc, product) => {
-    const status = getStockStatus(product?.stock || 0, product?.minStockLevel || 0);
+    const status = getStockStatus(
+      product?.stock || 0,
+      product?.minStockLevel || 0
+    );
     acc[status] = (acc[status] || 0) + 1;
     return acc;
   }, {});
@@ -445,7 +466,11 @@ function ProductGrid({
                   label="Low Stock"
                   color={stockFilter === "low_stock" ? "warning" : "default"}
                   variant={stockFilter === "low_stock" ? "filled" : "outlined"}
-                  onClick={() => onStockFilterChange?.(stockFilter === "low_stock" ? "" : "low_stock")}
+                  onClick={() =>
+                    onStockFilterChange?.(
+                      stockFilter === "low_stock" ? "" : "low_stock"
+                    )
+                  }
                   clickable
                 />
               </Badge>

@@ -106,7 +106,8 @@ function App() {
                   <Route
                     path="/orders/:orderId"
                     element={<OrderDetailsPage />}
-                  />                  <Route path="/inventory" element={<InventoryPage />} />
+                  />{" "}
+                  <Route path="/inventory" element={<InventoryPage />} />
                   <Route
                     path="/inventory/products/:id"
                     element={<ProductDetailsPage />}

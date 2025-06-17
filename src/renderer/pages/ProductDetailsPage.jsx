@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -10,7 +10,6 @@ import {
   Chip,
   Button,
   Divider,
-  Avatar,
   Alert,
   Tab,
   Tabs,
@@ -21,23 +20,20 @@ import {
   TableHead,
   TableRow,
   IconButton,
-  Tooltip,
   LinearProgress,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Edit,
-  Delete,
   Warning,
   CheckCircle,
   LocalOffer,
   Inventory,
   TrendingUp,
-  TrendingDown,
   History,
   ShoppingCart,
   LocalShipping,
@@ -47,19 +43,20 @@ import {
   Print,
   Share,
   Add,
-} from '@mui/icons-material';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useNotification } from '../context/NotificationContext';
-import ProductDialog from '../components/Inventory/ProductDialog';
+} from "@mui/icons-material";
+import { useParams, useNavigate } from "react-router-dom";
+import { useNotification } from "../context/NotificationContext";
+import ProductDialog from "../components/Inventory/ProductDialog";
 
 // Mock data for demonstration
 const mockProduct = {
   id: 1,
   name: "Organic Apples",
-  description: "Fresh organic red apples from local farms. Sweet, crispy, and perfect for snacking or cooking.",
+  description:
+    "Fresh organic red apples from local farms. Sweet, crispy, and perfect for snacking or cooking.",
   category: "Fruits",
   price: 4.99,
-  cost: 2.50,
+  cost: 2.5,
   stock: 45,
   minStockLevel: 10,
   maxStockLevel: 100,
@@ -89,11 +86,41 @@ const mockProduct = {
 };
 
 const mockStockHistory = [
-  { date: "2025-06-15", type: "sale", quantity: -5, balance: 45, note: "Online order #1234" },
-  { date: "2025-06-14", type: "sale", quantity: -3, balance: 50, note: "Store purchase" },
-  { date: "2025-06-10", type: "restock", quantity: +20, balance: 53, note: "Weekly delivery from supplier" },
-  { date: "2025-06-08", type: "sale", quantity: -7, balance: 33, note: "Bulk order" },
-  { date: "2025-06-05", type: "adjustment", quantity: -2, balance: 40, note: "Damaged items removed" },
+  {
+    date: "2025-06-15",
+    type: "sale",
+    quantity: -5,
+    balance: 45,
+    note: "Online order #1234",
+  },
+  {
+    date: "2025-06-14",
+    type: "sale",
+    quantity: -3,
+    balance: 50,
+    note: "Store purchase",
+  },
+  {
+    date: "2025-06-10",
+    type: "restock",
+    quantity: +20,
+    balance: 53,
+    note: "Weekly delivery from supplier",
+  },
+  {
+    date: "2025-06-08",
+    type: "sale",
+    quantity: -7,
+    balance: 33,
+    note: "Bulk order",
+  },
+  {
+    date: "2025-06-05",
+    type: "adjustment",
+    quantity: -2,
+    balance: 40,
+    note: "Damaged items removed",
+  },
 ];
 
 const mockSalesData = [
@@ -123,12 +150,15 @@ function ProductDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { showSuccess, showError } = useNotification() || {};
-  
+
   const [product, setProduct] = useState(mockProduct);
   const [tabValue, setTabValue] = useState(0);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [stockDialogOpen, setStockDialogOpen] = useState(false);
-  const [stockAdjustment, setStockAdjustment] = useState({ quantity: '', note: '' });
+  const [stockAdjustment, setStockAdjustment] = useState({
+    quantity: "",
+    note: "",
+  });
   const [loading, setLoading] = useState(false);
 
   const handleTabChange = (event, newValue) => {
@@ -160,30 +190,44 @@ function ProductDetailsPage() {
       setProduct({ ...product, stock: newStock });
       showSuccess?.("Stock adjusted successfully", "Success");
       setStockDialogOpen(false);
-      setStockAdjustment({ quantity: '', note: '' });
+      setStockAdjustment({ quantity: "", note: "" });
     } catch (error) {
       showError?.("Failed to adjust stock", "Error");
     }
   };
 
   const getStockStatus = () => {
-    if (product.stock === 0) return { status: 'out_of_stock', color: 'error', label: 'Out of Stock' };
-    if (product.stock <= product.minStockLevel) return { status: 'low_stock', color: 'warning', label: 'Low Stock' };
-    return { status: 'in_stock', color: 'success', label: 'In Stock' };
+    if (product.stock === 0)
+      return { status: "out_of_stock", color: "error", label: "Out of Stock" };
+    if (product.stock <= product.minStockLevel)
+      return { status: "low_stock", color: "warning", label: "Low Stock" };
+    return { status: "in_stock", color: "success", label: "In Stock" };
   };
 
   const stockStatus = getStockStatus();
-  const marginPercentage = product.cost ? (((product.price - product.cost) / product.cost) * 100).toFixed(1) : 0;
-  const stockPercentage = ((product.stock / product.maxStockLevel) * 100).toFixed(1);
+  const marginPercentage = product.cost
+    ? (((product.price - product.cost) / product.cost) * 100).toFixed(1)
+    : 0;
+  const stockPercentage = (
+    (product.stock / product.maxStockLevel) *
+    100
+  ).toFixed(1);
 
   return (
     <Box>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
         <Typography variant="h4" fontWeight="bold">
           Product Details
         </Typography>
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: "flex", gap: 1 }}>
           <Button
             variant="outlined"
             startIcon={<Refresh />}
@@ -191,16 +235,10 @@ function ProductDetailsPage() {
           >
             Refresh
           </Button>
-          <Button
-            variant="outlined"
-            startIcon={<Print />}
-          >
+          <Button variant="outlined" startIcon={<Print />}>
             Print
           </Button>
-          <Button
-            variant="outlined"
-            startIcon={<Share />}
-          >
+          <Button variant="outlined" startIcon={<Share />}>
             Share
           </Button>
           <Button
@@ -222,15 +260,28 @@ function ProductDetailsPage() {
               height="200"
               image={product.image}
               alt={product.name}
-              sx={{ objectFit: 'cover' }}
+              sx={{ objectFit: "cover" }}
             />
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  mb: 2,
+                }}
+              >
                 <Typography variant="h6" fontWeight="bold">
                   {product.name}
                 </Typography>
                 <Chip
-                  icon={stockStatus.status === 'in_stock' ? <CheckCircle /> : <Warning />}
+                  icon={
+                    stockStatus.status === "in_stock" ? (
+                      <CheckCircle />
+                    ) : (
+                      <Warning />
+                    )
+                  }
                   label={stockStatus.label}
                   color={stockStatus.color}
                   size="small"
@@ -241,7 +292,9 @@ function ProductDetailsPage() {
                 {product.description}
               </Typography>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}
+              >
                 <Typography variant="h5" color="primary" fontWeight="bold">
                   ${product.isOnSale ? product.salePrice : product.price}
                 </Typography>
@@ -249,7 +302,10 @@ function ProductDetailsPage() {
                   <>
                     <Typography
                       variant="body2"
-                      sx={{ textDecoration: 'line-through', color: 'text.secondary' }}
+                      sx={{
+                        textDecoration: "line-through",
+                        color: "text.secondary",
+                      }}
                     >
                       ${product.price}
                     </Typography>
@@ -265,24 +321,34 @@ function ProductDetailsPage() {
 
               <Divider sx={{ my: 2 }} />
 
-              <Box sx={{ display: 'flex', justify: 'space-between', mb: 1 }}>
+              <Box sx={{ display: "flex", justify: "space-between", mb: 1 }}>
                 <Typography variant="body2">SKU:</Typography>
-                <Typography variant="body2" fontWeight="bold">{product.sku}</Typography>
-              </Box>
-              
-              <Box sx={{ display: 'flex', justify: 'space-between', mb: 1 }}>
-                <Typography variant="body2">Category:</Typography>
-                <Chip label={product.category} size="small" variant="outlined" />
-              </Box>
-              
-              <Box sx={{ display: 'flex', justify: 'space-between', mb: 1 }}>
-                <Typography variant="body2">Brand:</Typography>
-                <Typography variant="body2" fontWeight="bold">{product.brand}</Typography>
+                <Typography variant="body2" fontWeight="bold">
+                  {product.sku}
+                </Typography>
               </Box>
 
-              <Box sx={{ display: 'flex', justify: 'space-between', mb: 2 }}>
+              <Box sx={{ display: "flex", justify: "space-between", mb: 1 }}>
+                <Typography variant="body2">Category:</Typography>
+                <Chip
+                  label={product.category}
+                  size="small"
+                  variant="outlined"
+                />
+              </Box>
+
+              <Box sx={{ display: "flex", justify: "space-between", mb: 1 }}>
+                <Typography variant="body2">Brand:</Typography>
+                <Typography variant="body2" fontWeight="bold">
+                  {product.brand}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", justify: "space-between", mb: 2 }}>
                 <Typography variant="body2">Supplier:</Typography>
-                <Typography variant="body2" fontWeight="bold">{product.supplier}</Typography>
+                <Typography variant="body2" fontWeight="bold">
+                  {product.supplier}
+                </Typography>
               </Box>
 
               <Button
@@ -309,7 +375,7 @@ function ProductDetailsPage() {
         {/* Details and Analytics */}
         <Grid item xs={12} md={8}>
           <Card>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <Tabs value={tabValue} onChange={handleTabChange}>
                 <Tab label="Overview" />
                 <Tab label="Stock Management" />
@@ -323,11 +389,17 @@ function ProductDetailsPage() {
               <Grid container spacing={3}>
                 {/* Key Metrics */}
                 <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom>Key Metrics</Typography>
+                  <Typography variant="h6" gutterBottom>
+                    Key Metrics
+                  </Typography>
                   <Grid container spacing={2}>
                     <Grid item xs={6} md={3}>
-                      <Paper sx={{ p: 2, textAlign: 'center' }}>
-                        <Typography variant="h4" color="primary" fontWeight="bold">
+                      <Paper sx={{ p: 2, textAlign: "center" }}>
+                        <Typography
+                          variant="h4"
+                          color="primary"
+                          fontWeight="bold"
+                        >
                           {product.stock}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -336,8 +408,12 @@ function ProductDetailsPage() {
                       </Paper>
                     </Grid>
                     <Grid item xs={6} md={3}>
-                      <Paper sx={{ p: 2, textAlign: 'center' }}>
-                        <Typography variant="h4" color="success.main" fontWeight="bold">
+                      <Paper sx={{ p: 2, textAlign: "center" }}>
+                        <Typography
+                          variant="h4"
+                          color="success.main"
+                          fontWeight="bold"
+                        >
                           {product.totalSold}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -346,8 +422,12 @@ function ProductDetailsPage() {
                       </Paper>
                     </Grid>
                     <Grid item xs={6} md={3}>
-                      <Paper sx={{ p: 2, textAlign: 'center' }}>
-                        <Typography variant="h4" color="info.main" fontWeight="bold">
+                      <Paper sx={{ p: 2, textAlign: "center" }}>
+                        <Typography
+                          variant="h4"
+                          color="info.main"
+                          fontWeight="bold"
+                        >
                           ${product.revenue}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -356,8 +436,12 @@ function ProductDetailsPage() {
                       </Paper>
                     </Grid>
                     <Grid item xs={6} md={3}>
-                      <Paper sx={{ p: 2, textAlign: 'center' }}>
-                        <Typography variant="h4" color="warning.main" fontWeight="bold">
+                      <Paper sx={{ p: 2, textAlign: "center" }}>
+                        <Typography
+                          variant="h4"
+                          color="warning.main"
+                          fontWeight="bold"
+                        >
                           {marginPercentage}%
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -370,7 +454,9 @@ function ProductDetailsPage() {
 
                 {/* Product Details */}
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>Product Information</Typography>
+                  <Typography variant="h6" gutterBottom>
+                    Product Information
+                  </Typography>
                   <TableContainer>
                     <Table size="small">
                       <TableBody>
@@ -400,7 +486,9 @@ function ProductDetailsPage() {
                         </TableRow>
                         <TableRow>
                           <TableCell>Expiry Date</TableCell>
-                          <TableCell>{new Date(product.expiryDate).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            {new Date(product.expiryDate).toLocaleDateString()}
+                          </TableCell>
                         </TableRow>
                       </TableBody>
                     </Table>
@@ -409,15 +497,28 @@ function ProductDetailsPage() {
 
                 {/* Ratings & Reviews */}
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>Customer Rating</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Customer Rating
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      mb: 2,
+                    }}
+                  >
                     <Typography variant="h4" fontWeight="bold">
                       {product.rating}
                     </Typography>
                     <Box>
                       {[1, 2, 3, 4, 5].map((star) => (
                         <IconButton key={star} size="small" disabled>
-                          {star <= product.rating ? <Star color="warning" /> : <StarBorder />}
+                          {star <= product.rating ? (
+                            <Star color="warning" />
+                          ) : (
+                            <StarBorder />
+                          )}
                         </IconButton>
                       ))}
                     </Box>
@@ -425,10 +526,12 @@ function ProductDetailsPage() {
                       ({product.reviewCount} reviews)
                     </Typography>
                   </Box>
-                  
+
                   {product.notes && (
                     <>
-                      <Typography variant="subtitle2" gutterBottom>Internal Notes</Typography>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Internal Notes
+                      </Typography>
                       <Alert severity="info" sx={{ mt: 1 }}>
                         {product.notes}
                       </Alert>
@@ -442,19 +545,35 @@ function ProductDetailsPage() {
             <TabPanel value={tabValue} index={1}>
               <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>Stock Levels</Typography>
+                  <Typography variant="h6" gutterBottom>
+                    Stock Levels
+                  </Typography>
                   <Box sx={{ mb: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mb: 1,
+                      }}
+                    >
                       <Typography variant="body2">Current Stock</Typography>
-                      <Typography variant="body2">{product.stock} / {product.maxStockLevel}</Typography>
+                      <Typography variant="body2">
+                        {product.stock} / {product.maxStockLevel}
+                      </Typography>
                     </Box>
-                    <LinearProgress 
-                      variant="determinate" 
-                      value={Math.min(stockPercentage, 100)} 
+                    <LinearProgress
+                      variant="determinate"
+                      value={Math.min(stockPercentage, 100)}
                       color={stockStatus.color}
                       sx={{ height: 8, borderRadius: 4 }}
                     />
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mt: 1,
+                      }}
+                    >
                       <Typography variant="caption" color="text.secondary">
                         Min: {product.minStockLevel}
                       </Typography>
@@ -465,22 +584,27 @@ function ProductDetailsPage() {
                   </Box>
 
                   <Alert severity={stockStatus.color} sx={{ mb: 2 }}>
-                    {stockStatus.status === 'low_stock' && 
+                    {stockStatus.status === "low_stock" &&
                       `Stock is running low! Only ${product.stock} units remaining.`}
-                    {stockStatus.status === 'out_of_stock' && 
-                      'Product is out of stock! Restock immediately.'}
-                    {stockStatus.status === 'in_stock' && 
-                      'Stock levels are healthy.'}
+                    {stockStatus.status === "out_of_stock" &&
+                      "Product is out of stock! Restock immediately."}
+                    {stockStatus.status === "in_stock" &&
+                      "Stock levels are healthy."}
                   </Alert>
 
                   <Typography variant="body2" color="text.secondary">
-                    Last restocked: {new Date(product.lastRestocked).toLocaleDateString()}
+                    Last restocked:{" "}
+                    {new Date(product.lastRestocked).toLocaleDateString()}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>Quick Actions</Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Quick Actions
+                  </Typography>
+                  <Box
+                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                  >
                     <Button
                       fullWidth
                       variant="contained"
@@ -507,7 +631,9 @@ function ProductDetailsPage() {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom>Recent Stock Movements</Typography>
+                  <Typography variant="h6" gutterBottom>
+                    Recent Stock Movements
+                  </Typography>
                   <TableContainer component={Paper}>
                     <Table>
                       <TableHead>
@@ -522,20 +648,33 @@ function ProductDetailsPage() {
                       <TableBody>
                         {mockStockHistory.slice(0, 5).map((entry, index) => (
                           <TableRow key={index}>
-                            <TableCell>{new Date(entry.date).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                              {new Date(entry.date).toLocaleDateString()}
+                            </TableCell>
                             <TableCell>
                               <Chip
                                 label={entry.type}
-                                color={entry.type === 'restock' ? 'success' : entry.type === 'sale' ? 'primary' : 'warning'}
+                                color={
+                                  entry.type === "restock"
+                                    ? "success"
+                                    : entry.type === "sale"
+                                    ? "primary"
+                                    : "warning"
+                                }
                                 size="small"
                               />
                             </TableCell>
                             <TableCell align="right">
                               <Typography
-                                color={entry.quantity > 0 ? 'success.main' : 'error.main'}
+                                color={
+                                  entry.quantity > 0
+                                    ? "success.main"
+                                    : "error.main"
+                                }
                                 fontWeight="bold"
                               >
-                                {entry.quantity > 0 ? '+' : ''}{entry.quantity}
+                                {entry.quantity > 0 ? "+" : ""}
+                                {entry.quantity}
                               </Typography>
                             </TableCell>
                             <TableCell align="right">{entry.balance}</TableCell>
@@ -553,11 +692,13 @@ function ProductDetailsPage() {
             <TabPanel value={tabValue} index={2}>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom>Sales Performance</Typography>
+                  <Typography variant="h6" gutterBottom>
+                    Sales Performance
+                  </Typography>
                   <Grid container spacing={2}>
                     {mockSalesData.map((data, index) => (
                       <Grid item xs={6} md={2} key={data.month}>
-                        <Paper sx={{ p: 2, textAlign: 'center' }}>
+                        <Paper sx={{ p: 2, textAlign: "center" }}>
                           <Typography variant="h6" fontWeight="bold">
                             {data.quantity}
                           </Typography>
@@ -574,9 +715,20 @@ function ProductDetailsPage() {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>Sales Trends</Typography>
-                  <Box sx={{ p: 3, textAlign: 'center', border: '1px dashed #ccc', borderRadius: 1 }}>
-                    <TrendingUp sx={{ fontSize: 48, color: 'success.main', mb: 2 }} />
+                  <Typography variant="h6" gutterBottom>
+                    Sales Trends
+                  </Typography>
+                  <Box
+                    sx={{
+                      p: 3,
+                      textAlign: "center",
+                      border: "1px dashed #ccc",
+                      borderRadius: 1,
+                    }}
+                  >
+                    <TrendingUp
+                      sx={{ fontSize: 48, color: "success.main", mb: 2 }}
+                    />
                     <Typography variant="body1">
                       Sales chart visualization would go here
                     </Typography>
@@ -587,7 +739,9 @@ function ProductDetailsPage() {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                  <Typography variant="h6" gutterBottom>Performance Metrics</Typography>
+                  <Typography variant="h6" gutterBottom>
+                    Performance Metrics
+                  </Typography>
                   <TableContainer>
                     <Table size="small">
                       <TableBody>
@@ -605,11 +759,15 @@ function ProductDetailsPage() {
                         </TableRow>
                         <TableRow>
                           <TableCell>Total Profit Margin</TableCell>
-                          <TableCell align="right">{marginPercentage}%</TableCell>
+                          <TableCell align="right">
+                            {marginPercentage}%
+                          </TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>Customer Rating</TableCell>
-                          <TableCell align="right">{product.rating}/5 ⭐</TableCell>
+                          <TableCell align="right">
+                            {product.rating}/5 ⭐
+                          </TableCell>
                         </TableRow>
                       </TableBody>
                     </Table>
@@ -622,7 +780,9 @@ function ProductDetailsPage() {
             <TabPanel value={tabValue} index={3}>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <Typography variant="h6" gutterBottom>Product History</Typography>
+                  <Typography variant="h6" gutterBottom>
+                    Product History
+                  </Typography>
                   <TableContainer component={Paper}>
                     <Table>
                       <TableHead>
@@ -635,25 +795,43 @@ function ProductDetailsPage() {
                       </TableHead>
                       <TableBody>
                         <TableRow>
-                          <TableCell>{new Date(product.updatedAt).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            {new Date(product.updatedAt).toLocaleDateString()}
+                          </TableCell>
                           <TableCell>
                             <Chip label="Updated" color="info" size="small" />
                           </TableCell>
-                          <TableCell>Price changed to ${product.price}</TableCell>
+                          <TableCell>
+                            Price changed to ${product.price}
+                          </TableCell>
                           <TableCell>Admin User</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableCell>{new Date(product.lastRestocked).toLocaleDateString()}</TableCell>
                           <TableCell>
-                            <Chip label="Restocked" color="success" size="small" />
+                            {new Date(
+                              product.lastRestocked
+                            ).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label="Restocked"
+                              color="success"
+                              size="small"
+                            />
                           </TableCell>
                           <TableCell>Added 20 units from supplier</TableCell>
                           <TableCell>System</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableCell>{new Date(product.createdAt).toLocaleDateString()}</TableCell>
                           <TableCell>
-                            <Chip label="Created" color="primary" size="small" />
+                            {new Date(product.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label="Created"
+                              color="primary"
+                              size="small"
+                            />
                           </TableCell>
                           <TableCell>Product added to inventory</TableCell>
                           <TableCell>Admin User</TableCell>
@@ -678,7 +856,12 @@ function ProductDetailsPage() {
       />
 
       {/* Stock Adjustment Dialog */}
-      <Dialog open={stockDialogOpen} onClose={() => setStockDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={stockDialogOpen}
+        onClose={() => setStockDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Adjust Stock Level</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 2 }}>
@@ -687,7 +870,12 @@ function ProductDetailsPage() {
               label="Quantity Adjustment"
               type="number"
               value={stockAdjustment.quantity}
-              onChange={(e) => setStockAdjustment({ ...stockAdjustment, quantity: e.target.value })}
+              onChange={(e) =>
+                setStockAdjustment({
+                  ...stockAdjustment,
+                  quantity: e.target.value,
+                })
+              }
               helperText="Use positive numbers to add stock, negative to remove"
               sx={{ mb: 2 }}
             />
@@ -697,7 +885,9 @@ function ProductDetailsPage() {
               multiline
               rows={3}
               value={stockAdjustment.note}
-              onChange={(e) => setStockAdjustment({ ...stockAdjustment, note: e.target.value })}
+              onChange={(e) =>
+                setStockAdjustment({ ...stockAdjustment, note: e.target.value })
+              }
               placeholder="Reason for stock adjustment..."
             />
           </Box>
