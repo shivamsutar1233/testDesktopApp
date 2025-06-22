@@ -1,17 +1,33 @@
-appId: com.grocerydelivery.management
-productName: Grocery Delivery Management
+appId: com.alphasquare.veggies.desktop
+productName: Veggies Delivery Management
 directories:
   output: dist-app
-  dist: dist-electron
+  buildResources: build
 files:
-  - dist/**/*
-  - node_modules/**/*
+  - src/main/**/*
+  - src/preload/**/*
   - package.json
+  - "!src/renderer/**/*"
+  - "!dist/**/*"
+  - "!node_modules/**/*"
+  - node_modules/electron/**/*
 mac:
   category: public.app-category.business
   target: dmg
 win:
-  target: nsis
+  target:
+    - target: nsis
+      arch:
+        - x64
+  verifyUpdateCodeSignature: false
+  forceCodeSigning: false
+  signAndEditExecutable: false
 linux:
   target: AppImage
   category: Office
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  runAfterFinish: false

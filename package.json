@@ -1,21 +1,28 @@
 {
-  "name": "grocery-delivery-management",
+  "name": "veggies-delivery-desktop",
   "version": "1.0.0",
-  "description": "Desktop app for managing online grocery delivery business",
+  "description": "Desktop app for Veggies Delivery Management - connects to https://veggies.alphasquare.in/",
   "main": "src/main/main.js",
-  "homepage": "./",
+  "homepage": "https://veggies.alphasquare.in/",
+  "author": "Alpha Square",
   "scripts": {
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
     "dev:vite": "vite",
     "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
-    "build": "vite build && electron-builder",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
     "build:vite": "vite build",
-    "build:dir": "vite build && electron-builder --dir",
+    "build:dir": "electron-builder --dir",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "grocery",
+    "delivery",
+    "management",
+    "desktop",
+    "electron"
+  ],
   "license": "ISC",
   "devDependencies": {
     "@vitejs/plugin-react": "^4.5.2",

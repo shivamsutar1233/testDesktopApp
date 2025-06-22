@@ -1,0 +1,145 @@
+# Veggies Delivery Management - API Endpoints
+# Base URL: https://veggies.alphasquare.in/api
+# Authentication: Bearer Token (JWT)
+
+## 🔐 AUTHENTICATION ENDPOINTS
+POST   /auth/login                     # User login with credentials
+POST   /auth/logout                    # User logout
+POST   /auth/refresh                   # Refresh access token
+GET    /auth/me                        # Get current user profile
+PUT    /auth/profile                   # Update user profile
+POST   /auth/change-password           # Change user password
+
+## 📦 ORDER MANAGEMENT ENDPOINTS
+GET    /orders                         # Get all orders (with pagination, filters)
+GET    /orders/{orderId}               # Get specific order details
+POST   /orders                         # Create new order
+PUT    /orders/{orderId}               # Update order
+DELETE /orders/{orderId}               # Cancel/Delete order
+GET    /orders/{orderId}/history       # Get order history/timeline
+POST   /orders/{orderId}/notes         # Add note to order
+PUT    /orders/{orderId}/status        # Update order status
+GET    /orders/search                  # Search orders by various criteria
+
+## 👥 CUSTOMER MANAGEMENT ENDPOINTS
+GET    /customers                      # Get all customers (with pagination)
+GET    /customers/{customerId}         # Get specific customer details
+POST   /customers                      # Create new customer
+PUT    /customers/{customerId}         # Update customer information
+DELETE /customers/{customerId}         # Delete customer
+GET    /customers/{customerId}/orders  # Get customer's order history
+GET    /customers/search               # Search customers
+
+## 🚚 DELIVERY MANAGEMENT ENDPOINTS
+GET    /deliveries                     # Get all deliveries (with filters)
+GET    /deliveries/{deliveryId}        # Get specific delivery details
+POST   /deliveries                     # Schedule new delivery
+PUT    /deliveries/{deliveryId}        # Update delivery information
+DELETE /deliveries/{deliveryId}        # Cancel delivery
+PUT    /deliveries/{deliveryId}/status # Update delivery status
+GET    /deliveries/{deliveryId}/tracking # Get real-time tracking data
+POST   /deliveries/{deliveryId}/location # Update delivery location
+GET    /deliveries/{deliveryId}/route  # Get delivery route
+POST   /deliveries/assign              # Assign delivery to driver
+GET    /deliveries/driver/{driverId}   # Get deliveries for specific driver
+
+## 🎯 DELIVERY TRACKING ENDPOINTS
+GET    /tracking/{trackingNumber}      # Track delivery by tracking number
+GET    /tracking/{deliveryId}/live     # Get live tracking updates
+POST   /tracking/{deliveryId}/update   # Update tracking status
+GET    /tracking/{deliveryId}/history  # Get tracking history
+WebSocket /tracking/live               # Real-time tracking updates (SignalR)
+
+## 👨‍💼 DRIVER MANAGEMENT ENDPOINTS
+GET    /drivers                        # Get all drivers
+GET    /drivers/{driverId}             # Get specific driver details
+POST   /drivers                        # Add new driver
+PUT    /drivers/{driverId}             # Update driver information
+DELETE /drivers/{driverId}             # Remove driver
+GET    /drivers/{driverId}/deliveries  # Get driver's assigned deliveries
+PUT    /drivers/{driverId}/status      # Update driver availability status
+GET    /drivers/{driverId}/location    # Get driver's current location
+POST   /drivers/{driverId}/location    # Update driver location
+
+## 📦 INVENTORY MANAGEMENT ENDPOINTS
+GET    /inventory                      # Get all inventory items
+GET    /inventory/{productId}          # Get specific product details
+POST   /inventory                      # Add new product
+PUT    /inventory/{productId}          # Update product information
+DELETE /inventory/{productId}          # Remove product
+PUT    /inventory/{productId}/stock    # Update stock quantity
+GET    /inventory/low-stock            # Get low stock items
+GET    /inventory/categories           # Get product categories
+POST   /inventory/bulk-update          # Bulk update inventory
+
+## 📊 DASHBOARD & ANALYTICS ENDPOINTS
+GET    /dashboard/stats                # Get dashboard statistics
+GET    /dashboard/orders-today         # Get today's orders
+GET    /dashboard/deliveries-active    # Get active deliveries
+GET    /dashboard/revenue              # Get revenue statistics
+GET    /analytics/orders               # Order analytics with date range
+GET    /analytics/deliveries           # Delivery performance analytics
+GET    /analytics/customers            # Customer analytics
+GET    /analytics/drivers              # Driver performance analytics
+
+## 🔔 NOTIFICATION ENDPOINTS
+GET    /notifications                  # Get user notifications
+POST   /notifications/mark-read        # Mark notifications as read
+POST   /notifications/send             # Send notification (admin)
+DELETE /notifications/{notificationId} # Delete notification
+WebSocket /notifications/live          # Real-time notifications (SignalR)
+
+## ⚙️ SETTINGS & CONFIGURATION ENDPOINTS
+GET    /settings                       # Get application settings
+PUT    /settings                       # Update settings
+GET    /settings/delivery-zones        # Get delivery zones
+POST   /settings/delivery-zones        # Add delivery zone
+PUT    /settings/delivery-zones/{zoneId} # Update delivery zone
+DELETE /settings/delivery-zones/{zoneId} # Delete delivery zone
+GET    /settings/delivery-charges      # Get delivery charge configuration
+PUT    /settings/delivery-charges      # Update delivery charges
+
+## 📱 MOBILE/EXTERNAL INTEGRATION ENDPOINTS
+GET    /mobile/orders/{customerId}     # Mobile app - customer orders
+POST   /mobile/orders                  # Mobile app - place order
+GET    /mobile/tracking/{orderId}      # Mobile app - track order
+POST   /webhook/payment                # Payment gateway webhook
+POST   /webhook/sms                    # SMS service webhook
+POST   /webhook/delivery-update        # External delivery service webhook
+
+## 🔍 SEARCH & FILTER ENDPOINTS
+GET    /search/global                  # Global search across all entities
+GET    /search/orders                  # Advanced order search
+GET    /search/customers               # Advanced customer search
+GET    /search/products                # Product search with filters
+
+## 📈 REPORTING ENDPOINTS
+GET    /reports/daily-summary          # Daily operations summary
+GET    /reports/weekly-summary         # Weekly summary report
+GET    /reports/monthly-summary        # Monthly summary report
+GET    /reports/driver-performance     # Driver performance report
+GET    /reports/delivery-efficiency    # Delivery efficiency metrics
+POST   /reports/custom                 # Generate custom report
+GET    /reports/export/{reportType}    # Export reports (PDF/Excel)
+
+## 🌐 REAL-TIME WEBSOCKET ENDPOINTS (SignalR)
+/hubs/delivery-tracking                # Real-time delivery tracking
+/hubs/notifications                    # Real-time notifications
+/hubs/order-updates                    # Real-time order status updates
+/hubs/driver-location                  # Real-time driver location updates
+
+# HTTP STATUS CODES USED:
+# 200 - OK (Success)
+# 201 - Created (Resource created successfully)
+# 400 - Bad Request (Invalid request data)
+# 401 - Unauthorized (Authentication required)
+# 403 - Forbidden (Access denied)
+# 404 - Not Found (Resource not found)
+# 500 - Internal Server Error (Server error)
+
+# COMMON QUERY PARAMETERS:
+# ?page=1&limit=20           # Pagination
+# ?search=keyword            # Search filter
+# ?status=active             # Status filter
+# ?sortBy=createdAt&order=desc # Sorting
+# ?dateFrom=2025-06-01&dateTo=2025-06-30 # Date range
