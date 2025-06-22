@@ -80,42 +80,69 @@ function LoginPage() {
 
   return (
     <Container component="main" maxWidth="sm">
+      {" "}
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: { xs: 4, sm: 6, md: 8 },
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          minHeight: "80vh",
+          minHeight: { xs: "90vh", sm: "85vh", md: "80vh" },
           justifyContent: "center",
+          px: { xs: 5, sm: 20, md: 20, lg: 60, xl: 80 },
+          py: { xs: 2, sm: 3 },
         }}
       >
+        {" "}
         <Paper
           elevation={3}
           sx={{
-            padding: 4,
+            padding: { xs: 3, sm: 4, md: 5 },
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             width: "100%",
+            maxWidth: { xs: "100%", sm: "400px", md: "450px" },
           }}
         >
+          {" "}
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              mb: 3,
+              mb: { xs: 2, sm: 3 },
+              flexDirection: { xs: "column", sm: "row" },
+              textAlign: { xs: "center", sm: "left" },
             }}
           >
-            <StoreIcon sx={{ fontSize: 40, color: "primary.main", mr: 1 }} />
-            <Typography component="h1" variant="h4" sx={{ fontWeight: "bold" }}>
+            <StoreIcon
+              sx={{
+                fontSize: { xs: 35, sm: 40 },
+                color: "primary.main",
+                mr: { xs: 0, sm: 1 },
+                mb: { xs: 1, sm: 0 },
+              }}
+            />
+            <Typography
+              component="h1"
+              variant="h4"
+              sx={{
+                fontWeight: "bold",
+                fontSize: { xs: "1.8rem", sm: "2.125rem" },
+              }}
+            >
               Grocery Manager
             </Typography>
-          </Box>
+          </Box>{" "}
           <Typography
             component="h2"
             variant="h6"
-            sx={{ mb: 3, color: "text.secondary" }}
+            sx={{
+              mb: { xs: 2, sm: 3 },
+              color: "text.secondary",
+              fontSize: { xs: "1rem", sm: "1.25rem" },
+              textAlign: "center",
+            }}
           >
             Sign in to your account
           </Typography>
@@ -163,12 +190,17 @@ function LoginPage() {
                   </InputAdornment>
                 ),
               }}
-            />
+            />{" "}
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
+              sx={{
+                mt: { xs: 2, sm: 3 },
+                mb: 2,
+                py: { xs: 1.2, sm: 1.5 },
+                fontSize: { xs: "0.9rem", sm: "1rem" },
+              }}
               disabled={isLoading || !formData.email || !formData.password}
             >
               {isLoading ? (
@@ -177,11 +209,11 @@ function LoginPage() {
                 "Sign In"
               )}
             </Button>
-          </Box>
+          </Box>{" "}
           <Box
             sx={{
               mt: 2,
-              p: 2,
+              p: { xs: 1.5, sm: 2 },
               bgcolor: "grey.50",
               borderRadius: 1,
               width: "100%",
@@ -191,22 +223,39 @@ function LoginPage() {
               variant="body2"
               color="text.secondary"
               align="center"
-              sx={{ mb: 1 }}
+              sx={{
+                mb: 1,
+                fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                fontWeight: "bold",
+              }}
             >
-              <strong>Default Login Credentials:</strong>
+              Default Login Credentials:
             </Typography>
-            <Typography variant="body2" color="text.secondary" align="center">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+            >
               Email: admin@grocerymanager.com
             </Typography>
-            <Typography variant="body2" color="text.secondary" align="center">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+            >
               Password: admin123
             </Typography>
-          </Box>
+          </Box>{" "}
           <Typography
             variant="body2"
             color="text.secondary"
             align="center"
-            sx={{ mt: 2 }}
+            sx={{
+              mt: 2,
+              fontSize: { xs: "0.75rem", sm: "0.875rem" },
+            }}
           >
             Welcome to the Grocery Delivery Management System
           </Typography>
